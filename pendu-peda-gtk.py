@@ -13,7 +13,7 @@ class GtkPendu(Gtk.Window):
         user = os.environ["USER"]
         repertoire = '/home/' + user + '/.primtux/pendu-peda'
         if not os.path.exists(repertoire):
-            print("Le repertoire n'existe pas. On le créer")
+            print("Le repertoire n'existe pas. On le crée")
             shutil.copytree('/usr/share/pendu-peda/data-files/',
                             '/home/' + user + '/.primtux/pendu-peda/data-files/')
         else:
@@ -71,17 +71,15 @@ class GtkPendu(Gtk.Window):
         fichier.close()
         del liste_mots[0:3]  # Nettoyage de l'entete
         print(liste_mots)
-        mot_choisi = choice(liste_mots).rstrip()
-        mot_choisi = mot_choisi.upper()
-        mot_choisi = ''.join((c for c in unicodedata.normalize('NFD', mot_choisi) if unicodedata.category(c) != 'Mn'))
+        self.mot_choisi = choice(liste_mots).rstrip()
+        self.mot_choisi = self.mot_choisi.upper()
+        self.mot_choisi = ''.join((c for c in unicodedata.normalize('NFD', self.mot_choisi) if unicodedata.category(c) != 'Mn'))
 
-        mot_partiel = " - " * len(mot_choisi)
+        self.mot_tiret = "-" * len(self.mot_choisi)
 
-        self.labelMotChoisi.set_text(mot_partiel)
-        print(mot_choisi)
-        self.mot_choisi = mot_choisi
+        self.labelMotChoisi.set_markup("<big><big><big>" + self.mot_tiret + "</big></big></big>")
+        print(self.mot_choisi)
 
-        return self.mot_choisi
 
 
     def clickSurLettres(self, widget, lettre, bouton):
@@ -93,8 +91,43 @@ class GtkPendu(Gtk.Window):
         if lettre in self.mot_choisi:
             print('Y')
 
+            nouveau_mot_partiel = ""
+            lettre_dans_mot = False
+            i = 0
+            while i < len(self.mot_choisi):
+                if self.mot_choisi[i] == lettre:
+                    nouveau_mot_partiel = nouveau_mot_partiel + lettre
+                    lettre_dans_mot = True
+                else:
+                    nouveau_mot_partiel = nouveau_mot_partiel + self.mot_tiret[i]
+                i += 1
+            self.mot_tiret = nouveau_mot_partiel
+            print('MOT TIRET', self.mot_tiret)
+            self.labelMotChoisi.set_markup("<big><big><big>" + self.mot_tiret + "</big></big></big>")
+
+
         else:
             print('no')
+
+            self.nb_echecs += 1
+            print(self.nb_echecs)
+            """nomFichier = "images/pendu_" + str(self.nb_echecs) + ".gif"
+            photo = PhotoImage(file=nomFichier)
+            image_pendu.config(image=photo)
+            image_pendu.image = photo"""
+            if self.nb_echecs == 7:  # trop d'erreurs. Fini.
+                print("PERDU !!!")
+
+                #essai += 1
+            elif self.mot_tiret == self.mot_choisi:
+                partie_en_cours = False
+                print("Vous avez gagné !")
+                """nomFichier = "images/pendu_10.gif"
+                photo = PhotoImage(file=nomFichier)
+                image_pendu.config(image=photo)"""
+
+
+
 
 
 
@@ -104,7 +137,7 @@ class GtkPendu(Gtk.Window):
 
     repData, file = installerConfigLocale()
     matriceCM, matriceCE, matriceAUTRE = creerMatrice(repData)
-
+    nb_echecs = 0
 
 
 
@@ -117,6 +150,8 @@ class GtkPendu(Gtk.Window):
         self.initJeu(widget)
 
     def __init__(self):
+
+
 
         Gtk.Window.__init__(self, title="Le pendu Pédagogique")
         self.set_border_width(3)
@@ -252,5 +287,5 @@ class GtkPendu(Gtk.Window):
 win = GtkPendu()
 win.connect("destroy", Gtk.main_quit)
 win.show_all()
-mot_choisi = win.initJeu(GtkPendu.file)
+win.initJeu(GtkPendu.file)
 Gtk.main()
