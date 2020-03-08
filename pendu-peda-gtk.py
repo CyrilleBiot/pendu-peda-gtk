@@ -11,8 +11,8 @@ __author__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __copyright__ = "Copyleft"
 __credits__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __license__ = "GPL"
-__version__ = "0.0.1"
-__date__ = "2020/03/03"
+__version__ = "0.0.2"
+__date__ = "2020/04/08"
 __maintainer__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __email__ = "cyrille@cbiot.fr"
 __status__ = "Devel"
@@ -25,7 +25,54 @@ import unicodedata
 import gi
 
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GdkPixbuf
+
+def gtk_style():
+    css = b"""
+#onglet23 {
+background-color: #DCDCDC;
+color: black;
+}  
+
+#bold {
+  font-weight: bold;
+}
+#img {
+  padding: 75 0 75 0;
+}
+#bouton-lettres {
+  text-shadow: 1px 1px 5px black;
+  box-shadow: 7px 7px 5px black;
+}
+#bouton-lettres:hover {
+  text-shadow: 1px 1px 5px black;
+  box-shadow: 7px 7px 5px black;
+  font-weight: bold;
+  color: red;
+}
+#okMatrice {
+    padding: 1px 25px 1px 25px ;
+}
+#mot_choisi {
+  font-size: 35px;
+  letter-spacing: 5px;
+  font-weight: bold;
+  color: red;
+  text-shadow: #000000 1px 1px, #000000 -1px 1px, #000000 -1px -1px, #000000 1px -1px;
+}
+#labelScore {
+color:red;
+}
+"""
+    style_provider = Gtk.CssProvider()
+    style_provider.load_from_data(css)
+
+    Gtk.StyleContext.add_provider_for_screen(
+        Gdk.Screen.get_default(),
+        style_provider,
+        Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+    )
+
 
 class GtkPendu(Gtk.Window):
 
@@ -47,8 +94,9 @@ class GtkPendu(Gtk.Window):
             print("Le repertoire existe. Configuration OK.")
         repData = '/home/' + user + '/.primtux/pendu-peda/data-files'
         file = 'autre-liste-francais.txt'
+        theme = "# Dictionnaire général"
 
-        return repData, file
+        return repData, file, theme
 
     def creer_matrice(repData):
         """
@@ -96,7 +144,7 @@ class GtkPendu(Gtk.Window):
         :return:
         """
         self.gestion_bouton('on')
-
+        print('LANCEMENT : ' , self.niveau)
 
         # Chargement fichier par défaut ou du fichier sélectionné ?
         try:
@@ -108,10 +156,10 @@ class GtkPendu(Gtk.Window):
             print("sure, it was defined : ", self.file)
 
         # Quelques vriables
-        self.jeu_actif = True           # Si nouvelle partie (booleen)
-        self.nb_echecs = 0              # Compte le nombre d'échecs (integer)
-        self.image_pendu.set_from_file('/usr/share/pendu-peda/images/pendu_0.gif') # Image par défaut
-
+        self.jeu_actif = True  # Si nouvelle partie (booleen)
+        self.nb_echecs = 0  # Compte le nombre d'échecs (integer)
+        self.image_pendu.set_from_file(
+            '/usr/share/pendu-peda/images/' + self.niveau + '/pendu_0.gif')  # Image par défaut
 
         # Chargement du fichier et choix aléatoire d'un mot
         fichier = open(str(self.repData) + '/' + str(self.file), "r")
@@ -120,16 +168,13 @@ class GtkPendu(Gtk.Window):
         del liste_mots[0:3]  # Nettoyage de l'entete
         self.mot_choisi = choice(liste_mots).rstrip()
         self.mot_choisi = self.mot_choisi.upper()
-        self.mot_choisi = ''.join((c for c in unicodedata.normalize('NFD', self.mot_choisi) if unicodedata.category(c) != 'Mn'))
+        self.mot_choisi = ''.join(
+            (c for c in unicodedata.normalize('NFD', self.mot_choisi) if unicodedata.category(c) != 'Mn'))
 
         # Créer d'un mot contenant le même nombre de lettres mais affichant des tirets
         # Mise à jour de son label
         self.mot_tiret = "-" * len(self.mot_choisi)
-        self.labelMotChoisi.set_markup('<span color="#c0392b" weight="bold" size="xx-large" stretch="ultraexpanded">' + self.mot_tiret + "</span>")
-
-        # DEBUG
-        print(self.mot_choisi)
-        print(self.score , '/', self.nb_parties)
+        self.labelMotChoisi.set_markup(self.mot_tiret)
 
     def gestion_bouton(self, etat):
         """
@@ -156,9 +201,7 @@ class GtkPendu(Gtk.Window):
         bouton.set_sensitive(False)
 
         if self.jeu_actif == True:
-
             if lettre in self.mot_choisi:
-                print('Y')
                 mot = ""
                 i = 0
                 while i < len(self.mot_choisi):
@@ -170,29 +213,24 @@ class GtkPendu(Gtk.Window):
                     i += 1
                 self.mot_tiret = mot
 
-                self.labelMotChoisi.set_markup(
-                    '<span color="#c0392b" weight="bold" size="xx-large" stretch="ultraexpanded">'
-                    + self.mot_tiret + "</span>")
+                self.labelMotChoisi.set_markup(self.mot_tiret)
 
                 if self.mot_tiret == self.mot_choisi:
-                    print("Vous avez gagné !!!")
                     self.jeu_actif = False
-                    self.image_pendu.set_from_file('/usr/share/pendu-peda/images/pendu_10.gif')
+                    self.image_pendu.set_from_file('/usr/share/pendu-peda/images/' + self.niveau + '/pendu_gagne.gif')
                     self.gestion_bouton('off')
                     self.score += 1
                     self.nb_parties += 1
-                    print(self.score, '/', self.nb_parties)
 
             else:
                 self.nb_echecs += 1
-                self.image_pendu.set_from_file('/usr/share/pendu-peda/images/' + 'pendu_' + str(self.nb_echecs)+'.gif')
+                self.image_pendu.set_from_file(
+                    '/usr/share/pendu-peda/images/' + self.niveau + '/pendu_' + str(self.nb_echecs) + '.gif')
                 if self.nb_echecs == 7:  # trop d'erreurs. Fini.
-                    print("PERDU !!!")
                     self.labelMotChoisi.set_markup("<big><big><big>" + self.mot_choisi + "</big></big></big>")
                     self.jeu_actif = False
                     self.gestion_bouton('off')
                     self.nb_parties += 1
-                    print(self.score, '/', self.nb_parties)
 
         self.mise_a_jour_score(widget)
 
@@ -203,11 +241,28 @@ class GtkPendu(Gtk.Window):
         :return:
         """
         # Chargement fichier par défaut ou du fichier sélectionné ?
-        print(self.score)
-        print(self.nb_parties)
-        self.labelScore.set_text(str(self.score) + '/' + str(self.nb_parties))
+        self.labelScore.set_markup('Score : ' + str(self.score) + '/' + str(self.nb_parties))
 
+    def fct_buttun_radio(self, widget, file, theme):
+        """
+        Function qui gere le button_radio (toggle)
+        :param widget:
+        :param file: Nom du Fichier
+        :param theme: Theme ud Fichier
+        :return:
+        """
+        self.file = file
+        self.theme = theme
 
+    def fct_buttun_radio_niveau(self, widget, niveau):
+        """
+        Function qui gere le button_radio (toggle) du
+        sélectionneur de niveau
+        :param widget:
+        :param niveau: niveau choisi
+        :return:
+        """
+        self.niveau = niveau
 
     def selectionner_fichier(self, widget, file, theme):
         """
@@ -220,17 +275,65 @@ class GtkPendu(Gtk.Window):
         :return:
         """
         self.notebook.set_current_page(0)
-        self.labelFile.set_text(self.repData + '/' + file)
-        self.labelTheme.set_text(theme)
+        self.labelFile.set_markup(self.repData + '/' + file)
+        self.labelTheme.set_markup(self.file)
+        self.labelFile.set_markup(self.theme)
+        self.labelNiveau.set_markup('# Niveau : ' + self.niveau)
         self.lancement_jeu(widget)
+
+    def on_button_clicked(self,widget):
+        # Recuperation n° de version
+        lignes = __doc__.split("\n")
+        for l in lignes:
+            if '__version__' in l:
+                version = l[15:-1]
+
+        authors = ["Cyrille BIOT"]
+        documenters = ["Cyrille BIOT"]
+        self.dialog = Gtk.AboutDialog()
+        logo = GdkPixbuf.Pixbuf.new_from_file("./pendu-peda.png")
+        if logo != None:
+            self.dialog.set_logo(logo)
+        else:
+            print("A GdkPixbuf Error has occurred.")
+        self.dialog.set_name("Gtk.AboutDialog")
+        self.dialog.set_version(version)
+        self.dialog.set_copyright("(C) 2020 Cyrille BIOT")
+        self.dialog.set_comments("Le Pendu Pédagogique.")
+        self.dialog.set_license("GNU General Public License (GPL), version 3.\n"
+    "This program is free software: you can redistribute it and/or modify\n"
+    "it under the terms of the GNU General Public License as published by\n"
+    "the Free Software Foundation, either version 3 of the License, or\n"
+    "(at your option) any later version.\n"
+    "\n"
+    "This program is distributed in the hope that it will be useful,\n"
+    "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+    "GNU General Public License for more details.\n"
+    "You should have received a copy of the GNU General Public License\n"
+    "along with this program.  If not, see <https://www.gnu.org/licenses/>\n")
+        self.dialog.set_website("https://cbiot.fr")
+        self.dialog.set_website_label("cbiot.fr")
+        self.dialog.set_website("https://github.com/CyrilleBiot/pendu-peda-gtk")
+        self.dialog.set_website_label("GIT Le pendu pédagogique GTK")
+        self.dialog.set_authors(authors)
+        self.dialog.set_documenters(documenters)
+        self.dialog.set_translator_credits("Cyrille BIOT")
+        self.dialog.connect("response", self.on_dialog_button_clicked)
+        self.dialog.run()
+
+    def on_dialog_button_clicked(self, widget,response):
+        self.dialog.destroy()
+
 
     # -----------------------------------------------------------
     # Les données de base
-    repData, file = installer_config_locale()
+    repData, file, theme = installer_config_locale()
     matriceCM, matriceCE, matriceAUTRE = creer_matrice(repData)
     nb_echecs = 0
     score = 0
     nb_parties = 0
+    niveau = "001"
 
     def __init__(self):
 
@@ -254,6 +357,7 @@ class GtkPendu(Gtk.Window):
         self.boutonLettres = [0] * 26
         for i in range(26):
             self.boutonLettres[i] = Gtk.Button(label=chr(i + 65))
+            self.boutonLettres[i].set_name('bouton-lettres')
             self.boutonLettres[i].connect("clicked", self.click_sur_lettres, chr(i + 65), self.boutonLettres[i])
             self.grid.attach(self.boutonLettres[i], i, 0, 1, 1)
 
@@ -261,32 +365,37 @@ class GtkPendu(Gtk.Window):
         boutonRecommencer = Gtk.Button(label="Recommencer")
         boutonQuitter = Gtk.Button(label="Quitter")
         boutonRecommencer.connect("clicked", self.lancement_jeu)
-        boutonQuitter.connect("clicked",Gtk.main_quit)
+        boutonQuitter.connect("clicked", Gtk.main_quit)
 
-        self.grid.attach(boutonRecommencer,0, 4, 13, 1)
-        self.grid.attach(boutonQuitter, 13, 4, 13, 1)
+        self.grid.attach(boutonRecommencer, 0, 3, 13, 1)
+        self.grid.attach(boutonQuitter, 13, 3, 13, 1)
 
         # L'image
-        self.image_pendu = Gtk.Image.new_from_file('/usr/share/pendu-peda/images/' + 'pendu_0.gif')
+        self.image_pendu = Gtk.Image.new_from_file('/usr/share/pendu-peda/images/' + self.niveau + '/pendu_0.gif')
         self.image_pendu.set_halign(Gtk.Align.END)
-        self.grid.attach(self.image_pendu, 0,1,13,1)
-
+        self.image_pendu.set_name('img')
+        self.grid.attach(self.image_pendu, 0, 1, 13, 1)
 
         # Zone de texte
         self.labelMotChoisi = Gtk.Label('mot choisi')
+        self.labelMotChoisi.set_name('mot_choisi')
         self.grid.attach(self.labelMotChoisi, 13, 1, 13, 1)
 
         # Score
-        self.labelScore = Gtk.Label('Score : 0 / 0' + str(self.score) + str(self.nb_parties))
-        self.grid.attach(self.labelScore, 0, 3, 26, 1)
+        self.labelScore = Gtk.Label('Score : ' + str(self.score) + '/' + str(self.nb_parties))
+        self.labelScore.set_name('labelScore')
+        self.grid.attach(self.labelScore, 0, 2, 26, 1)
 
         # Le pied de page
         self.labelFile = Gtk.Label(self.repData + '/' + self.file)
         self.labelTheme = Gtk.Label('# Dictionnaire général')
+        self.labelNiveau = Gtk.Label('# Niveau : 001')
         self.labelFile.set_halign(Gtk.Align.START)
         self.labelTheme.set_halign(Gtk.Align.START)
-        self.grid.attach(self.labelFile, 0, 5, 13, 1)
-        self.grid.attach(self.labelTheme, 13, 5, 13, 1)
+        self.labelTheme.set_halign(Gtk.Align.START)
+        self.grid.attach(self.labelFile, 0, 4, 11, 1)
+        self.grid.attach(self.labelTheme, 11, 4, 11, 1)
+        self.grid.attach(self.labelNiveau, 22, 4, 4, 1)
 
         # Affichage sur la grille
         self.notebook.append_page(self.grid)
@@ -294,7 +403,9 @@ class GtkPendu(Gtk.Window):
         # --------
         # ONGLET 2
         # Creation d'une grille et des boutons associés
-        self.grid2 = Gtk.Grid()
+        self.grid2 = Gtk.Grid(column_spacing=50,
+                              row_spacing=1)
+        self.grid2.set_name('onglet23')
         textMatriceCM = [0] * int(len(self.matriceCM))
         boutonMatriceCM = [0] * int(len(self.matriceCM))
         textMatriceCE = [0] * int(len(self.matriceCE))
@@ -307,12 +418,17 @@ class GtkPendu(Gtk.Window):
         self.grid2.attach(texteCM, 0, 0, 2, 1)
         for i in range(len(self.matriceCM)):
             textMatriceCM[i] = Gtk.Label(self.matriceCM[i][2])
-            self.grid2.attach(textMatriceCM[i], 0, i+1, 1, 1)
+            self.grid2.attach(textMatriceCM[i], 0, i + 1, 1, 1)
             textMatriceCM[i].set_halign(Gtk.Align.END)
             textMatriceCM[i].set_direction(Gtk.TextDirection.RTL)
-            boutonMatriceCM[i] = Gtk.Button.new_with_label("GO")
-            boutonMatriceCM[i].connect("clicked", self.selectionner_fichier, self.matriceCM[i][3], self.matriceCM[i][2])
-            self.grid2.attach(boutonMatriceCM[i], 1, i+1, 1, 1)
+            if i == 0:
+                boutonMatriceCM[i] = Gtk.RadioButton.new(None)
+            else:
+                boutonMatriceCM[i] = Gtk.RadioButton.new_from_widget(boutonMatriceCM[0])
+            #boutonMatriceCM[i].connect("clicked", self.selectionner_fichier, self.matriceCM[i][3], self.matriceCM[i][2])
+            boutonMatriceCM[i].connect("toggled", self.fct_buttun_radio, self.matriceCM[i][3], self.matriceCM[i][2])
+            boutonMatriceCM[i].set_name('okMatrice')
+            self.grid2.attach(boutonMatriceCM[i], 1, i + 1, 1, 1)
 
         # Colonne CE
         texteCE = Gtk.Label("NIVEAU CE")
@@ -322,21 +438,57 @@ class GtkPendu(Gtk.Window):
             self.grid2.attach(textMatriceCE[i], 2, i + 1, 1, 1)
             textMatriceCE[i].set_halign(Gtk.Align.END)
             textMatriceCE[i].set_direction(Gtk.TextDirection.RTL)
-            boutonMatriceCE[i] = Gtk.Button.new_with_label("GO")
-            boutonMatriceCE[i].connect("clicked", self.selectionner_fichier, self.matriceCE[i][3], self.matriceCE[i][2])
-            self.grid2.attach(boutonMatriceCE[i], 3, i+1, 1, 1)
+            #boutonMatriceCE[i] = Gtk.Button.new_with_label("GO")
+            #boutonMatriceCE[i].connect("clicked", self.selectionner_fichier, self.matriceCE[i][3], self.matriceCE[i][2])
+            boutonMatriceCE[i] = Gtk.RadioButton.new_from_widget(boutonMatriceCM[0])
+            boutonMatriceCE[i].connect("toggled", self.fct_buttun_radio, self.matriceCE[i][3], self.matriceCE[i][2])
+            boutonMatriceCE[i].set_name('okMatrice')
+            self.grid2.attach(boutonMatriceCE[i], 3, i + 1, 1, 1)
 
         # Colonne AUTRE
-        texteAUTRE = Gtk.Label("NIVEAU CE")
+        texteAUTRE = Gtk.Label("AUTRES")
         self.grid2.attach(texteAUTRE, 4, 0, 2, 1)
         for i in range(len(self.matriceAUTRE)):
             textMatriceAUTRE[i] = Gtk.Label(self.matriceAUTRE[i][2])
             self.grid2.attach(textMatriceAUTRE[i], 4, i + 1, 1, 1)
             textMatriceAUTRE[i].set_halign(Gtk.Align.END)
             textMatriceAUTRE[i].set_direction(Gtk.TextDirection.RTL)
-            boutonMatriceAUTRE[i] = Gtk.Button.new_with_label("GO")
-            boutonMatriceAUTRE[i].connect("clicked", self.selectionner_fichier, self.matriceAUTRE[i][3], self.matriceAUTRE[i][2])
+            #boutonMatriceAUTRE[i] = Gtk.Button.new_with_label("GO")
+            #boutonMatriceAUTRE[i].connect("clicked", self.selectionner_fichier, self.matriceAUTRE[i][3], self.matriceAUTRE[i][2])
+            boutonMatriceAUTRE[i] = Gtk.RadioButton.new_from_widget(boutonMatriceCM[0])
+            boutonMatriceAUTRE[i].connect("toggled", self.fct_buttun_radio, self.matriceAUTRE[i][3], self.matriceAUTRE[i][2])
+            boutonMatriceAUTRE[i].set_name('okMatrice')
             self.grid2.attach(boutonMatriceAUTRE[i], 5, i + 1, 1, 1)
+
+        # Colonne 4
+
+        # Lanceur de sélection
+        texteLancerJeu = Gtk.Label('Lancer le thème sélectionné')
+        boutonLancerJeu = Gtk.Button("C'EST PARTI ! ! ! ",)
+        texteLancerJeu.set_name('bold')
+        boutonLancerJeu.connect("clicked", self.selectionner_fichier, self.file, self.theme)
+        self.grid2.attach(texteLancerJeu, 6, 0, 1, 2)
+        self.grid2.attach(boutonLancerJeu, 6, 2, 1, 2)
+
+        # Sélecteur de niveau
+        texteSelectNiveau = Gtk.Label('Choisir votre niveau')
+        texteSelectNiveau.set_name('bold')
+        self.grid2.attach(texteSelectNiveau, 6, 4, 1, 2)
+
+        boutonRadioNiveau1 = Gtk.RadioButton.new_with_label(None, 'Niveau 1 [normal]')
+        boutonRadioNiveau2 = Gtk.RadioButton.new_with_label_from_widget(boutonRadioNiveau1, 'Niveau 2 [facile]')
+        boutonRadioNiveau1.connect("toggled",self.fct_buttun_radio_niveau, '001')
+        boutonRadioNiveau2.connect("toggled",self.fct_buttun_radio_niveau, '002')
+        self.grid2.attach(boutonRadioNiveau1, 6, 6, 1, 1)
+        self.grid2.attach(boutonRadioNiveau2, 6, 7, 1, 4)
+
+        # Bouton ABOUT
+        labelAbout = Gtk.Label('A propos / Crédit')
+        labelAbout.set_name('bold')
+        boutonAbout = Gtk.Button("ABOUT")
+        boutonAbout.connect("clicked", self.on_button_clicked)
+        self.grid2.attach(labelAbout, 6, 12, 1, 3)
+        self.grid2.attach(boutonAbout, 6, 15, 1, 1)
 
         # Affichage sur la grille avec un scroll
         s_win = Gtk.ScrolledWindow()
@@ -345,27 +497,18 @@ class GtkPendu(Gtk.Window):
         self.set_default_size(800, 300)
         self.notebook.append_page(s_win)
 
-        # --------
-        # ONGLET 3
-        messageOnglet3 = __doc__
-        self.page3 = Gtk.Box()
-        self.page3.set_border_width(10)
-        self.page3.add(Gtk.Label('aze'))
-        self.notebook.append_page(
-            self.page3,
-            Gtk.Image.new_from_icon_name(
-                "help-about",
-                Gtk.IconSize.MENU
-            )
-        )
-
 
 def main():
+    """
+    La boucle de lancement
+    :return:
+    """
+    gtk_style()
     win = GtkPendu()
-    win.move(20,20)
+    win.move(20, 20)
     win.connect("destroy", Gtk.main_quit)
-    win.show_all()
     win.lancement_jeu(GtkPendu.file)
+    win.show_all()
     Gtk.main()
 
 
