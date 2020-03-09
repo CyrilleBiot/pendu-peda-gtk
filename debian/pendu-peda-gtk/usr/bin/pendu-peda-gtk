@@ -1,3 +1,0 @@
-#!/bin/sh
-cd  /usr/share/pendu-peda-gtk/
-/usr/bin/python3 /usr/share/pendu-peda-gtk/pendu-peda-gtk.py 
