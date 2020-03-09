@@ -1,0 +1,14 @@
+Source: pendu-peda-gtk
+Section: education
+Version: 0.0.2
+Priority: optional
+Maintainer: Cyrille Biot <cyrille@cbiot.fr>
+Build-Depends: debhelper (>= 9)
+Homepage: https://github.com/CyrilleBiot/pendu-peda-gtk
+
+Package: pendu-peda-gtk
+Version: 0.0.2
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3, python3-gi
+Homepage: https://github.com/CyrilleBiot/pendu-peda-gtk
+Description: Hangman game with as themes the learning areas of cycles 2 and 3 of primary school. Pendu-peda-gtk does not take any options. Thematic files can be incremented in the directory : /home/$user/.primtux/pendu-peda-gtk/data-files/

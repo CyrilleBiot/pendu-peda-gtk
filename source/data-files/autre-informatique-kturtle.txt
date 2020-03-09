@@ -1,0 +1,22 @@
+# AUTRE
+# TICE
+# Langage kturtle
+fontsize
+forward
+turnleft
+turnright
+backward
+go
+pendown
+penwidth
+pencolor
+clear
+reset
+spritehide
+spriteshow
+print
+message
+random
+exit
+ask
+repeat

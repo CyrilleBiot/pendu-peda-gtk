@@ -1,0 +1,71 @@
+ dpkg-buildpackage -us -uc -ui
+dpkg-buildpackage: info: paquet source pendu-peda-gtk
+dpkg-buildpackage: info: version source 0.0.2
+dpkg-buildpackage: info: distribution source unstable
+dpkg-buildpackage: info: source changé par ragnarok <ragnarok@fenrir.home>
+ dpkg-source --before-build .
+dpkg-buildpackage: info: architecture hôte amd64
+dpkg-source: avertissement: champ d'information inconnu « Version » dans les données d'entrée de section générale dans le fichier info
+dpkg-source: avertissement: champ d'information inconnu « Version » dans les données d'entrée de section du paquet dans le fichier info
+ fakeroot debian/rules clean
+dh clean
+   dh_clean
+ dpkg-source -b .
+dpkg-source: avertissement: aucun format source indiqué dans debian/source/format, voir dpkg-source(1)
+dpkg-source: avertissement: champ d'information inconnu « Version » dans les données d'entrée de section générale dans le fichier info
+dpkg-source: avertissement: champ d'information inconnu « Version » dans les données d'entrée de section du paquet dans le fichier info
+dpkg-source: avertissement: répertoire source « pendu-peda-gtk » n'est pas <paquet_source>-<version_amont> « pendu-peda-gtk-0.0.2 »
+dpkg-source: info: utilisation du format source « 1.0 »
+dpkg-source: info: construction de pendu-peda-gtk dans pendu-peda-gtk_0.0.2.tar.gz
+dpkg-source: avertissement: information manquante pour le champ de sortie Standards-Version
+dpkg-source: info: construction de pendu-peda-gtk dans pendu-peda-gtk_0.0.2.dsc
+ debian/rules build
+dh build
+   dh_update_autotools_config
+   dh_autoreconf
+   create-stamp debian/debhelper-build-stamp
+ fakeroot debian/rules binary
+dh binary
+   dh_testroot
+   dh_prep
+   dh_install
+   dh_installdocs
+   dh_installchangelogs
+   dh_installman
+   dh_perl
+   dh_link
+   dh_strip_nondeterminism
+   dh_compress
+   dh_fixperms
+   dh_missing
+   dh_installdeb
+   dh_gencontrol
+dpkg-gencontrol: avertissement: champ d'information inconnu « Version » dans les données d'entrée de section générale dans le fichier info
+dpkg-gencontrol: avertissement: champ d'information inconnu « Version » dans les données d'entrée de section du paquet dans le fichier info
+dpkg-gencontrol: avertissement: champ Depends du paquet pendu-peda-gtk : substitution variable ${shlibs:Depends} used, but is not defined
+   dh_md5sums
+   dh_builddeb
+dpkg-deb: building package 'pendu-peda-gtk' in '../pendu-peda-gtk_0.0.2_all.deb'.
+ dpkg-genbuildinfo
+ dpkg-genchanges  >../pendu-peda-gtk_0.0.2_amd64.changes
+dpkg-genchanges: avertissement: champ d'information inconnu « Version » dans les données d'entrée de section générale dans le fichier info
+dpkg-genchanges: avertissement: champ d'information inconnu « Version » dans les données d'entrée de section du paquet dans le fichier info
+dpkg-genchanges: info: inclusion du code source original dans l'envoi (« upload »)
+ dpkg-source --after-build .
+dpkg-source: avertissement: champ d'information inconnu « Version » dans les données d'entrée de section générale dans le fichier info
+dpkg-source: avertissement: champ d'information inconnu « Version » dans les données d'entrée de section du paquet dans le fichier info
+dpkg-buildpackage: info: envoi complet ; paquet Debian natif (inclusion du code source complet)
+Now running lintian pendu-peda-gtk_0.0.2_amd64.changes ...
+E: pendu-peda-gtk: extended-description-is-empty
+E: pendu-peda-gtk source: no-standards-version-field
+W: pendu-peda-gtk source: ambiguous-paragraph-in-dep5-copyright paragraph at line 7
+W: pendu-peda-gtk source: changelog-should-mention-nmu
+W: pendu-peda-gtk: description-too-long
+W: pendu-peda-gtk: manpage-has-bad-whatis-entry usr/share/man/man6/pendu-peda-gtk.6.gz
+W: pendu-peda-gtk source: missing-debian-source-format
+W: pendu-peda-gtk source: missing-field-in-dep5-copyright copyright (paragraph at line 5)
+W: pendu-peda-gtk source: missing-field-in-dep5-copyright license (paragraph at line 5)
+W: pendu-peda-gtk source: package-needs-versioned-debhelper-build-depends 11
+W: pendu-peda-gtk source: source-nmu-has-incorrect-version-number 0.0.2
+W: pendu-peda-gtk: wrong-bug-number-in-closes l3:#XXXXXX
+Finished running lintian.
