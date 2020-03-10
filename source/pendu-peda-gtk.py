@@ -160,7 +160,7 @@ class GtkPendu(Gtk.Window):
                 self.boutonLettres[i].set_name('bouton-lettres')
             else:
                 self.boutonLettres[i].set_sensitive(False)
-                self.bouton.set_name('bouton-lettres-inactif')
+                self.boutonLettres[i].set_name('bouton-lettres-inactif')
 
     def click_sur_lettres(self, widget, lettre, bouton):
         """
@@ -173,7 +173,7 @@ class GtkPendu(Gtk.Window):
         """
         bouton.set_sensitive(False)
         bouton.set_name('bouton-lettres-inactif')
-
+        
         if self.jeu_actif == True:
             if lettre in self.mot_choisi:
                 mot = ""
@@ -206,16 +206,16 @@ class GtkPendu(Gtk.Window):
                     self.gestion_bouton('off')
                     self.nb_parties += 1
 
-        self.mise_a_jour_score(widget)
+        self.mise_a_jour_score(widget, self.score, self.nb_parties)
 
-    def mise_a_jour_score(self, widget):
+    def mise_a_jour_score(self, widget, score, nb_parties):
         """
         Fonction actualisant le label score / nb_parties
         :param widget:
         :return:
         """
         # Chargement fichier par défaut ou du fichier sélectionné ?
-        self.labelScore.set_markup('Score : ' + str(self.score) + '/' + str(self.nb_parties))
+        self.labelScore.set_markup('Score : ' + str(score) + '/' + str(nb_parties))
 
     def fct_buttun_radio(self, widget, file, theme):
         """
