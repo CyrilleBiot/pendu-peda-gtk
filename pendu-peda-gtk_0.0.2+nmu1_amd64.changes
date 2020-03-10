@@ -1,0 +1,31 @@
+Format: 1.8
+Date: Tue, 10 Mar 2020 11:06:31 +0100
+Source: pendu-peda-gtk
+Binary: pendu-peda-gtk
+Architecture: source all
+Version: 0.0.2+nmu1
+Distribution: unstable
+Urgency: medium
+Maintainer: Cyrille Biot <cyrille@cbiot.fr>
+Changed-By: ragnarok <ragnarok@fenrir.home>
+Description:
+ pendu-peda-gtk - Hangman game with as themes the learning areas of cycles 2 and 3
+Changes:
+ pendu-peda-gtk (0.0.2+nmu1) unstable; urgency=medium
+ .
+   * Fix bugs. Add icon. Rebuild CSS.
+Checksums-Sha1:
+ 0c14a04fe07d92d9e8c088e70c24405b4cf81048 593 pendu-peda-gtk_0.0.2+nmu1.dsc
+ 858412d1923a0d54bf1d70853874a1672a6112a8 180297 pendu-peda-gtk_0.0.2+nmu1.tar.gz
+ 8b8aa2c08625aa20de36082593783ea363ac4db3 130740 pendu-peda-gtk_0.0.2+nmu1_all.deb
+ 828b293af84319b2bb30062be59f92660b85824c 4629 pendu-peda-gtk_0.0.2+nmu1_amd64.buildinfo
+Checksums-Sha256:
+ 9262bd6bee9c9844b7751c54f6282e79687ac2d59a566f8cf8e1df3a0ce76cd2 593 pendu-peda-gtk_0.0.2+nmu1.dsc
+ a1b458297b50b25b33eb17c8465884519f22331dfe521b836a0b47b0fa3e61d4 180297 pendu-peda-gtk_0.0.2+nmu1.tar.gz
+ b54d09a371972fcf4e581b5d9ae9e99a060281c721b7fdf4ce1cc93e3f034ed3 130740 pendu-peda-gtk_0.0.2+nmu1_all.deb
+ 058726458322ac148adeed4969b76287edafada33585b4d19531de301da61b38 4629 pendu-peda-gtk_0.0.2+nmu1_amd64.buildinfo
+Files:
+ 48b010c1e6ab71ffed75a3b559b9601c 593 education optional pendu-peda-gtk_0.0.2+nmu1.dsc
+ 34d5ffe83cd0078293db2608177989de 180297 education optional pendu-peda-gtk_0.0.2+nmu1.tar.gz
+ ac0af6b48080890fdde2e32af1e19a92 130740 education optional pendu-peda-gtk_0.0.2+nmu1_all.deb
+ 24ffe4253cd91096bd6447d3f8b441a7 4629 education optional pendu-peda-gtk_0.0.2+nmu1_amd64.buildinfo

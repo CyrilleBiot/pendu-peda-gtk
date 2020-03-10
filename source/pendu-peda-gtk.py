@@ -3,6 +3,8 @@
 """
 pendu-peda-gtk.py
 Jeu du pendu, version pédagogique.
+Recodé en GTK
+
 En lien avec les programmes officiels de l'école primaire.
   Source : https://github.com/CyrilleBiot/pendu-peda-gtk
   Source : https://cbiot.fr/
@@ -12,7 +14,7 @@ __copyright__ = "Copyleft"
 __credits__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __license__ = "GPL"
 __version__ = "0.0.2"
-__date__ = "2020/04/08"
+__date__ = "2021/04/08"
 __maintainer__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __email__ = "cyrille@cbiot.fr"
 __status__ = "Devel"
@@ -28,51 +30,20 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
 def gtk_style():
-    css = b"""
-#onglet23 {
-background-color: #DCDCDC;
-color: black;
-}  
-
-#bold {
-  font-weight: bold;
-}
-#img {
-  padding: 75 0 75 0;
-}
-#bouton-lettres {
-  text-shadow: 1px 1px 5px black;
-  box-shadow: 7px 7px 5px black;
-}
-#bouton-lettres:hover {
-  text-shadow: 1px 1px 5px black;
-  box-shadow: 7px 7px 5px black;
-  font-weight: bold;
-  color: red;
-}
-#okMatrice {
-    padding: 1px 25px 1px 25px ;
-}
-#mot_choisi {
-  font-size: 35px;
-  letter-spacing: 5px;
-  font-weight: bold;
-  color: red;
-  text-shadow: #000000 1px 1px, #000000 -1px 1px, #000000 -1px -1px, #000000 1px -1px;
-}
-#labelScore {
-color:red;
-}
-"""
+    """
+    Fonction definition de CSS de l'application
+    Le fichier css : pendu-peda-gtk.css
+    :return:
+    """
+    fileCSS = "./pendu-peda-gtk.css"
     style_provider = Gtk.CssProvider()
-    style_provider.load_from_data(css)
+    style_provider.load_from_path(fileCSS)
 
     Gtk.StyleContext.add_provider_for_screen(
         Gdk.Screen.get_default(),
         style_provider,
         Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
     )
-
 
 class GtkPendu(Gtk.Window):
 
@@ -186,8 +157,10 @@ class GtkPendu(Gtk.Window):
         for i in range(26):
             if etat == "on":
                 self.boutonLettres[i].set_sensitive(True)
+                self.boutonLettres[i].set_name('bouton-lettres')
             else:
                 self.boutonLettres[i].set_sensitive(False)
+                self.bouton.set_name('bouton-lettres-inactif')
 
     def click_sur_lettres(self, widget, lettre, bouton):
         """
@@ -199,6 +172,7 @@ class GtkPendu(Gtk.Window):
         :return:
         """
         bouton.set_sensitive(False)
+        bouton.set_name('bouton-lettres-inactif')
 
         if self.jeu_actif == True:
             if lettre in self.mot_choisi:
@@ -282,11 +256,19 @@ class GtkPendu(Gtk.Window):
         self.lancement_jeu(widget)
 
     def on_button_clicked(self,widget):
+        """
+        Fonction de la Boite de Dialogue About
+        :param widget:
+        :return:
+        """
         # Recuperation n° de version
+        print(__doc__)
         lignes = __doc__.split("\n")
         for l in lignes:
             if '__version__' in l:
                 version = l[15:-1]
+            if '__date__' in l:
+                dateGtKBox = l[12:-1]
 
         authors = ["Cyrille BIOT"]
         documenters = ["Cyrille BIOT"]
@@ -299,7 +281,8 @@ class GtkPendu(Gtk.Window):
         self.dialog.set_name("Gtk.AboutDialog")
         self.dialog.set_version(version)
         self.dialog.set_copyright("(C) 2020 Cyrille BIOT")
-        self.dialog.set_comments("Le Pendu Pédagogique.")
+        self.dialog.set_comments("Le Pendu Pédagogique.\n\n" \
+                                "[" + dateGtKBox + "]")
         self.dialog.set_license("GNU General Public License (GPL), version 3.\n"
     "This program is free software: you can redistribute it and/or modify\n"
     "it under the terms of the GNU General Public License as published by\n"
@@ -323,6 +306,12 @@ class GtkPendu(Gtk.Window):
         self.dialog.run()
 
     def on_dialog_button_clicked(self, widget,response):
+        """
+        Fonction fermant la boite de dialogue About
+        :param widget:
+        :param response:
+        :return:
+        """
         self.dialog.destroy()
 
 
@@ -338,6 +327,7 @@ class GtkPendu(Gtk.Window):
     def __init__(self):
 
         Gtk.Window.__init__(self, title="Le pendu Pédagogique")
+        self.set_icon_from_file("./pendu-peda.png")
 
         # Initialisation de la fenetre, creation d'un notebook
         self.set_border_width(3)

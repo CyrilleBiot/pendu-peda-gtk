@@ -1,0 +1,36 @@
+#onglet23 {
+  background-color: #DCDCDC;
+  color: black;
+}
+#bold {
+  font-weight: bold;
+}
+#img {
+  padding: 75 0 75 0;
+}
+#bouton-lettres {
+  text-shadow: 1px 1px 5px black;
+  box-shadow: 7px 7px 5px black;
+}
+#bouton-lettres:hover {
+  text-shadow: 1px 1px 5px black;
+  box-shadow: 7px 7px 5px black;
+  font-weight: bold;
+  color: blue;
+}
+#bouton-lettres-inactif {
+  background-color: white
+}
+#okMatrice {
+    padding: 1px 25px 1px 25px ;
+}
+#mot_choisi {
+  font-size: 35px;
+  letter-spacing: 5px;
+  font-weight: bold;
+  color: red;
+  text-shadow: #000000 1px 1px, #000000 -1px 1px, #000000 -1px -1px, #000000 1px -1px;
+}
+#labelScore {
+color:red;
+}
