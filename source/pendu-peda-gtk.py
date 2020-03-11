@@ -13,8 +13,8 @@ __author__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __copyright__ = "Copyleft"
 __credits__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __license__ = "GPL"
-__version__ = "0.0.2"
-__date__ = "2021/04/08"
+__version__ = "0.2"
+__date__ = "2020/03/11"
 __maintainer__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __email__ = "cyrille@cbiot.fr"
 __status__ = "Devel"
@@ -56,14 +56,14 @@ class GtkPendu(Gtk.Window):
         file : (string). le fichier chargé par défaut
         """
         user = os.environ["USER"]
-        repertoire = '/home/' + user + '/.primtux/pendu-peda-gtk'
+        repertoire = '/home/' + user + '/.config/primtux/pendu-peda-gtk'
         if not os.path.exists(repertoire):
             print("Le repertoire n'existe pas. On le crée.")
             shutil.copytree('/usr/share/pendu-peda-gtk/data-files/',
-                            '/home/' + user + '/.primtux/pendu-peda-gtk/data-files/')
+                            '/home/' + user + '/.config/primtux/pendu-peda-gtk/data-files/')
         else:
             print("Le repertoire existe. Configuration OK.")
-        repData = '/home/' + user + '/.primtux/pendu-peda-gtk/data-files'
+        repData = '/home/' + user + '/.config/primtux/pendu-peda-gtk/data-files'
         file = 'autre-liste-francais.txt'
         theme = "# Dictionnaire général"
 
@@ -115,7 +115,6 @@ class GtkPendu(Gtk.Window):
         :return:
         """
         self.gestion_bouton('on')
-        print('LANCEMENT : ' , self.niveau)
 
         # Chargement fichier par défaut ou du fichier sélectionné ?
         try:
@@ -162,7 +161,7 @@ class GtkPendu(Gtk.Window):
                 self.boutonLettres[i].set_sensitive(False)
                 self.boutonLettres[i].set_name('bouton-lettres-inactif')
 
-    def click_sur_lettres(self, widget, lettre, bouton):
+    def clic_sur_lettres(self, widget, lettre, bouton):
         """
         Gestion d'un clic sur une lettre
         Infirme ou confirme sa présence dans le mot
@@ -173,7 +172,13 @@ class GtkPendu(Gtk.Window):
         """
         bouton.set_sensitive(False)
         bouton.set_name('bouton-lettres-inactif')
-        
+
+        # Gestion du niveau
+        if self.niveau == '001':
+            max_essais = 7
+        else:
+            max_essais = 10
+
         if self.jeu_actif == True:
             if lettre in self.mot_choisi:
                 mot = ""
@@ -200,8 +205,8 @@ class GtkPendu(Gtk.Window):
                 self.nb_echecs += 1
                 self.image_pendu.set_from_file(
                     '/usr/share/pendu-peda-gtk/images/' + self.niveau + '/pendu_' + str(self.nb_echecs) + '.gif')
-                if self.nb_echecs == 7:  # trop d'erreurs. Fini.
-                    self.labelMotChoisi.set_markup("<big><big><big>" + self.mot_choisi + "</big></big></big>")
+                if self.nb_echecs == max_essais:  # trop d'erreurs. Fini.
+                    self.labelMotChoisi.set_markup(self.mot_choisi)
                     self.jeu_actif = False
                     self.gestion_bouton('off')
                     self.nb_parties += 1
@@ -217,7 +222,7 @@ class GtkPendu(Gtk.Window):
         # Chargement fichier par défaut ou du fichier sélectionné ?
         self.labelScore.set_markup('Score : ' + str(score) + '/' + str(nb_parties))
 
-    def fct_buttun_radio(self, widget, file, theme):
+    def fct_bouton_radio(self, widget, file, theme):
         """
         Function qui gere le button_radio (toggle)
         :param widget:
@@ -228,7 +233,7 @@ class GtkPendu(Gtk.Window):
         self.file = file
         self.theme = theme
 
-    def fct_buttun_radio_niveau(self, widget, niveau):
+    def bouton_radio_niveau(self, widget, niveau):
         """
         Function qui gere le button_radio (toggle) du
         sélectionneur de niveau
@@ -255,7 +260,7 @@ class GtkPendu(Gtk.Window):
         self.labelNiveau.set_markup('# Niveau : ' + self.niveau)
         self.lancement_jeu(widget)
 
-    def on_button_clicked(self,widget):
+    def cliquer_sur_bouton_a_propos(self, widget):
         """
         Fonction de la Boite de Dialogue About
         :param widget:
@@ -302,10 +307,10 @@ class GtkPendu(Gtk.Window):
         self.dialog.set_authors(authors)
         self.dialog.set_documenters(documenters)
         self.dialog.set_translator_credits("Cyrille BIOT")
-        self.dialog.connect("response", self.on_dialog_button_clicked)
+        self.dialog.connect("response", self.cliquer_sur_bouton_a_propos_reponse)
         self.dialog.run()
 
-    def on_dialog_button_clicked(self, widget,response):
+    def cliquer_sur_bouton_a_propos_reponse(self, widget, response):
         """
         Fonction fermant la boite de dialogue About
         :param widget:
@@ -313,7 +318,7 @@ class GtkPendu(Gtk.Window):
         :return:
         """
         self.dialog.destroy()
-
+        self.notebook.set_current_page(0)
 
     # -----------------------------------------------------------
     # Les données de base
@@ -331,7 +336,7 @@ class GtkPendu(Gtk.Window):
 
         # Initialisation de la fenetre, creation d'un notebook
         self.set_border_width(3)
-        self.set_default_size(800, 800)
+        self.set_default_size(800, 600)
         self.notebook = Gtk.Notebook()
         self.add(self.notebook)
         self.connect
@@ -348,7 +353,7 @@ class GtkPendu(Gtk.Window):
         for i in range(26):
             self.boutonLettres[i] = Gtk.Button(label=chr(i + 65))
             self.boutonLettres[i].set_name('bouton-lettres')
-            self.boutonLettres[i].connect("clicked", self.click_sur_lettres, chr(i + 65), self.boutonLettres[i])
+            self.boutonLettres[i].connect("clicked", self.clic_sur_lettres, chr(i + 65), self.boutonLettres[i])
             self.grid.attach(self.boutonLettres[i], i, 0, 1, 1)
 
         # Les boutons
@@ -388,7 +393,7 @@ class GtkPendu(Gtk.Window):
         self.grid.attach(self.labelNiveau, 22, 4, 4, 1)
 
         # Affichage sur la grille
-        self.notebook.append_page(self.grid)
+        self.notebook.append_page(self.grid, Gtk.Label('Jeu'))
 
         # --------
         # ONGLET 2
@@ -416,7 +421,7 @@ class GtkPendu(Gtk.Window):
             else:
                 boutonMatriceCM[i] = Gtk.RadioButton.new_from_widget(boutonMatriceCM[0])
             #boutonMatriceCM[i].connect("clicked", self.selectionner_fichier, self.matriceCM[i][3], self.matriceCM[i][2])
-            boutonMatriceCM[i].connect("toggled", self.fct_buttun_radio, self.matriceCM[i][3], self.matriceCM[i][2])
+            boutonMatriceCM[i].connect("toggled", self.fct_bouton_radio, self.matriceCM[i][3], self.matriceCM[i][2])
             boutonMatriceCM[i].set_name('okMatrice')
             self.grid2.attach(boutonMatriceCM[i], 1, i + 1, 1, 1)
 
@@ -431,7 +436,7 @@ class GtkPendu(Gtk.Window):
             #boutonMatriceCE[i] = Gtk.Button.new_with_label("GO")
             #boutonMatriceCE[i].connect("clicked", self.selectionner_fichier, self.matriceCE[i][3], self.matriceCE[i][2])
             boutonMatriceCE[i] = Gtk.RadioButton.new_from_widget(boutonMatriceCM[0])
-            boutonMatriceCE[i].connect("toggled", self.fct_buttun_radio, self.matriceCE[i][3], self.matriceCE[i][2])
+            boutonMatriceCE[i].connect("toggled", self.fct_bouton_radio, self.matriceCE[i][3], self.matriceCE[i][2])
             boutonMatriceCE[i].set_name('okMatrice')
             self.grid2.attach(boutonMatriceCE[i], 3, i + 1, 1, 1)
 
@@ -446,7 +451,7 @@ class GtkPendu(Gtk.Window):
             #boutonMatriceAUTRE[i] = Gtk.Button.new_with_label("GO")
             #boutonMatriceAUTRE[i].connect("clicked", self.selectionner_fichier, self.matriceAUTRE[i][3], self.matriceAUTRE[i][2])
             boutonMatriceAUTRE[i] = Gtk.RadioButton.new_from_widget(boutonMatriceCM[0])
-            boutonMatriceAUTRE[i].connect("toggled", self.fct_buttun_radio, self.matriceAUTRE[i][3], self.matriceAUTRE[i][2])
+            boutonMatriceAUTRE[i].connect("toggled", self.fct_bouton_radio, self.matriceAUTRE[i][3], self.matriceAUTRE[i][2])
             boutonMatriceAUTRE[i].set_name('okMatrice')
             self.grid2.attach(boutonMatriceAUTRE[i], 5, i + 1, 1, 1)
 
@@ -457,36 +462,42 @@ class GtkPendu(Gtk.Window):
         boutonLancerJeu = Gtk.Button("C'EST PARTI ! ! ! ",)
         texteLancerJeu.set_name('bold')
         boutonLancerJeu.connect("clicked", self.selectionner_fichier, self.file, self.theme)
-        self.grid2.attach(texteLancerJeu, 6, 0, 1, 2)
-        self.grid2.attach(boutonLancerJeu, 6, 2, 1, 2)
+        self.grid2.attach(texteLancerJeu, 6, 5, 1, 2)
+        self.grid2.attach(boutonLancerJeu, 6, 7, 1, 2)
 
         # Sélecteur de niveau
         texteSelectNiveau = Gtk.Label('Choisir votre niveau')
         texteSelectNiveau.set_name('bold')
-        self.grid2.attach(texteSelectNiveau, 6, 4, 1, 2)
+        self.grid2.attach(texteSelectNiveau, 6, 0, 1, 2)
 
-        boutonRadioNiveau1 = Gtk.RadioButton.new_with_label(None, 'Niveau 1 [normal]')
-        boutonRadioNiveau2 = Gtk.RadioButton.new_with_label_from_widget(boutonRadioNiveau1, 'Niveau 2 [facile]')
-        boutonRadioNiveau1.connect("toggled",self.fct_buttun_radio_niveau, '001')
-        boutonRadioNiveau2.connect("toggled",self.fct_buttun_radio_niveau, '002')
-        self.grid2.attach(boutonRadioNiveau1, 6, 6, 1, 1)
-        self.grid2.attach(boutonRadioNiveau2, 6, 7, 1, 4)
-
-        # Bouton ABOUT
-        labelAbout = Gtk.Label('A propos / Crédit')
-        labelAbout.set_name('bold')
-        boutonAbout = Gtk.Button("ABOUT")
-        boutonAbout.connect("clicked", self.on_button_clicked)
-        self.grid2.attach(labelAbout, 6, 12, 1, 3)
-        self.grid2.attach(boutonAbout, 6, 15, 1, 1)
+        boutonRadioNiveau1 = Gtk.RadioButton.new_with_label(None, '[normal]')
+        boutonRadioNiveau2 = Gtk.RadioButton.new_with_label_from_widget(boutonRadioNiveau1, '[facile]')
+        boutonRadioNiveau1.connect("toggled", self.bouton_radio_niveau, '001')
+        boutonRadioNiveau2.connect("toggled", self.bouton_radio_niveau, '002')
+        self.grid2.attach(boutonRadioNiveau2, 6, 2, 1, 1)
+        self.grid2.attach(boutonRadioNiveau1, 6, 3, 1, 2)
 
         # Affichage sur la grille avec un scroll
         s_win = Gtk.ScrolledWindow()
         s_win.add_with_viewport(self.grid2)
         self.add(s_win)
         self.set_default_size(800, 300)
-        self.notebook.append_page(s_win)
+        self.notebook.append_page(s_win, Gtk.Label('Configuration'))
 
+        # --------
+        # ONGLET 3
+        # A propos
+        about = Gtk.HBox()
+        logo = Gtk.Image.new_from_file("./pendu-peda.png")
+        if logo != None:
+            about.add(logo)
+        else:
+            print("A GdkPixbuf Error has occurred.")
+        logo.connect('map', self.cliquer_sur_bouton_a_propos)
+        self.notebook.append_page(about, Gtk.Image.new_from_icon_name(
+                "help-about",
+                Gtk.IconSize.MENU
+            ))
 
 def main():
     """

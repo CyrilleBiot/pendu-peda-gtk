@@ -28,9 +28,9 @@
   font-size: 35px;
   letter-spacing: 5px;
   font-weight: bold;
-  color: red;
+  color: blue;
   text-shadow: #000000 1px 1px, #000000 -1px 1px, #000000 -1px -1px, #000000 1px -1px;
 }
 #labelScore {
-color:red;
+color:blue;
 }
