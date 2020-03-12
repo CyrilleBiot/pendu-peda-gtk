@@ -339,12 +339,6 @@ class GtkPendu(Gtk.Window):
     # -----------------------------------------------------------
     # Les données de base
     rep, repData, fichierCSS, dossierImages, file, theme = installer_config_locale()
-    print(rep)
-    print(repData)
-    print(fichierCSS)
-    print(dossierImages)
-    print(file)
-    print(theme)
 
     matriceCM, matriceCE, matriceAUTRE = creer_matrice(repData)
     nb_echecs = 0
@@ -442,11 +436,9 @@ class GtkPendu(Gtk.Window):
             self.boxCMV.set_homogeneous(True)
 
             textMatriceCM[i] = Gtk.Label(self.matriceCM[i][2])
-            #self.grid2.attach(textMatriceCM[i], 0, i + 6, 1, 1)
             self.boxCMV.pack_start(textMatriceCM[i], True, True, 1)
 
-            textMatriceCM[i].set_halign(Gtk.Align.END)
-            textMatriceCM[i].set_direction(Gtk.TextDirection.RTL)
+            textMatriceCM[i].set_halign(Gtk.Align.START)
             if i == 0:
                 boutonMatriceCM[i] = Gtk.RadioButton.new(None)
             else:
@@ -469,8 +461,7 @@ class GtkPendu(Gtk.Window):
             self.boxCEV.set_homogeneous(True)
             textMatriceCE[i] = Gtk.Label(self.matriceCE[i][2])
             self.boxCEV.pack_start(textMatriceCE[i], True, True, 1)
-            textMatriceCE[i].set_halign(Gtk.Align.END)
-            textMatriceCE[i].set_direction(Gtk.TextDirection.RTL)
+            textMatriceCE[i].set_halign(Gtk.Align.START)
             boutonMatriceCE[i] = Gtk.RadioButton.new_from_widget(boutonMatriceCM[0])
             boutonMatriceCE[i].connect("toggled", self.fct_bouton_radio, self.matriceCE[i][3], self.matriceCE[i][2])
             boutonMatriceCE[i].set_halign(Gtk.Align.CENTER)
@@ -489,8 +480,7 @@ class GtkPendu(Gtk.Window):
             self.boxAUTREV.set_homogeneous(True)
             textMatriceAUTRE[i] = Gtk.Label(self.matriceAUTRE[i][2])
             self.boxAUTREV.pack_start(textMatriceAUTRE[i], True, True, 1)
-            textMatriceAUTRE[i].set_halign(Gtk.Align.END)
-            textMatriceAUTRE[i].set_direction(Gtk.TextDirection.RTL)
+            textMatriceAUTRE[i].set_halign(Gtk.Align.START)
             boutonMatriceAUTRE[i] = Gtk.RadioButton.new_from_widget(boutonMatriceCM[0])
             boutonMatriceAUTRE[i].connect("toggled", self.fct_bouton_radio, self.matriceAUTRE[i][3], self.matriceAUTRE[i][2])
             boutonMatriceAUTRE[i].set_halign(Gtk.Align.CENTER)
@@ -500,10 +490,9 @@ class GtkPendu(Gtk.Window):
 
         # Ligne NIVEAU
         # Lanceur de sélection
-        boutonLancerJeu = Gtk.Button("C'EST PARTI ! ! ! ",)
+        boutonLancerJeu = Gtk.Button("C'EST PARTI ! ! ! ")
+        boutonLancerJeu.set_halign(Gtk.Align.START)
         boutonLancerJeu.connect("clicked", self.selectionner_fichier, self.file, self.theme)
-        texteSelectNiveau = Gtk.Label('Choisir votre niveau')
-        texteSelectNiveau.set_name('bold')
         boutonRadioNiveau1 = Gtk.RadioButton.new_with_label(None, '[normal]')
         boutonRadioNiveau2 = Gtk.RadioButton.new_with_label_from_widget(boutonRadioNiveau1, '[facile]')
         boutonRadioNiveau1.connect("toggled", self.bouton_radio_niveau, '001')
@@ -512,9 +501,9 @@ class GtkPendu(Gtk.Window):
         self.add(self.box)
         self.boxAUTRE.set_homogeneous(True)
         self.boxAUTRE.set_valign(Gtk.Align.CENTER)
-        self.box.pack_start(boutonRadioNiveau1, True, True, 1)
-        self.box.pack_start(boutonRadioNiveau2, True, True, 1)
-        self.box.pack_start(boutonLancerJeu, True, True, 1)
+        self.box.pack_start(boutonRadioNiveau1, True, False, 1)
+        self.box.pack_start(boutonRadioNiveau2, True, False, 1)
+        self.box.pack_start(boutonLancerJeu, True, False, 1)
 
         frameNiveau = Gtk.Frame()
         frameNiveau.set_label_align(0.5, 0.5)

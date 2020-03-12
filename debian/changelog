@@ -1,3 +1,9 @@
+pendu-peda-gtk (0.3+nmu1) UNRELEASED; urgency=medium
+
+  * Clean Gtk.box code
+
+ -- ragnarok <ragnarok@fenrir.home>  Thu, 12 Mar 2020 21:30:32 +0100
+
 pendu-peda-gtk (0.3) unstable; urgency=medium
 
   * DEBUG mode since the git source dir. 
