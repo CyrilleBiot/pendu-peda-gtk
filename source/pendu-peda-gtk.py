@@ -13,8 +13,8 @@ __author__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __copyright__ = "Copyleft"
 __credits__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __license__ = "GPL"
-__version__ = "0.2"
-__date__ = "2020/03/11"
+__version__ = "0.3"
+__date__ = "2020/03/12"
 __maintainer__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __email__ = "cyrille@cbiot.fr"
 __status__ = "Devel"
@@ -29,46 +29,60 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
-def gtk_style():
-    """
-    Fonction definition de CSS de l'application
-    Le fichier css : pendu-peda-gtk.css
-    :return:
-    """
-    fileCSS = "./pendu-peda-gtk.css"
-    style_provider = Gtk.CssProvider()
-    style_provider.load_from_path(fileCSS)
-
-    Gtk.StyleContext.add_provider_for_screen(
-        Gdk.Screen.get_default(),
-        style_provider,
-        Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-    )
-
 class GtkPendu(Gtk.Window):
-
     def installer_config_locale():
         """
         Installe les fichiers de conf par défaut dans le répertoire de l'user
         afin que celui-ci puisse les incrémenter en fonction de ses besoins
+        Permet de tester une installation directement depuis le GIT
         :return:
         repData : (string). le fichier de conf de l'user lançant le script
         file : (string). le fichier chargé par défaut
         """
-        user = os.environ["USER"]
-        repertoire = '/home/' + user + '/.config/primtux/pendu-peda-gtk'
-        if not os.path.exists(repertoire):
-            print("Le repertoire n'existe pas. On le crée.")
-            shutil.copytree('/usr/share/pendu-peda-gtk/data-files/',
-                            '/home/' + user + '/.config/primtux/pendu-peda-gtk/data-files/')
+        # Est on dans le git où non ?
+        # Mode DEBUG / DEV [ ON EST DANS LE GIT ]
+        if os.path.exists('.git'):
+            rep = './source/'
+            repData = "./source/data-files/"
+            fichierCSS = "./source/pendu-peda-gtk.css"
+            dossierImages = "./source/images/"
+
         else:
-            print("Le repertoire existe. Configuration OK.")
-        repData = '/home/' + user + '/.config/primtux/pendu-peda-gtk/data-files'
+            # On  n'est pas dans le git
+            user = os.environ["USER"]
+            repertoire = '/home/' + user + '/.config/primtux/pendu-peda-gtk'
+            if not os.path.exists(repertoire):
+                print("Le repertoire n'existe pas. On le crée.")
+                shutil.copytree('/usr/share/pendu-peda-gtk/data-files/',
+                                '/home/' + user + '/.config/primtux/pendu-peda-gtk/data-files/')
+            else:
+                print("Le repertoire existe. Configuration OK.")
+
+            rep = '/usr/share/pendu-peda-gtk/'
+            repData = '/home/' + user + '/.config/primtux/pendu-peda-gtk/data-files'
+            fichierCSS = "/usr/share/pendu-peda-gtk/pendu-peda-gtk.css"
+            dossierImages = "/usr/share/pendu-peda-gtk/images/"
+
         file = 'autre-liste-francais.txt'
         theme = "# Dictionnaire général"
 
-        return repData, file, theme
+        return rep, repData, fichierCSS, dossierImages, file, theme
 
+
+    def gtk_style(self):
+        """
+        Fonction definition de CSS de l'application
+        Le fichier css : pendu-peda-gtk.css
+        :return:
+        """
+        style_provider = Gtk.CssProvider()
+        style_provider.load_from_path(self.fichierCSS)
+
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(),
+            style_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
     def creer_matrice(repData):
         """
         Scanne le répertoire de données et réalise le classement des fichiers de config
@@ -123,13 +137,12 @@ class GtkPendu(Gtk.Window):
             print("Chargement du fichier de défaut.")
             self.file = 'autre-liste-francais.txt'
         else:
-            print("sure, it was defined : ", self.file)
+            print("Utilisation du fichier demandé : ", self.file)
 
         # Quelques vriables
         self.jeu_actif = True  # Si nouvelle partie (booleen)
         self.nb_echecs = 0  # Compte le nombre d'échecs (integer)
-        self.image_pendu.set_from_file(
-            '/usr/share/pendu-peda-gtk/images/' + self.niveau + '/pendu_0.gif')  # Image par défaut
+        self.image_pendu.set_from_file(self.dossierImages + self.niveau + '/pendu_0.gif')
 
         # Chargement du fichier et choix aléatoire d'un mot
         fichier = open(str(self.repData) + '/' + str(self.file), "r")
@@ -196,15 +209,14 @@ class GtkPendu(Gtk.Window):
 
                 if self.mot_tiret == self.mot_choisi:
                     self.jeu_actif = False
-                    self.image_pendu.set_from_file('/usr/share/pendu-peda-gtk/images/' + self.niveau + '/pendu_gagne.gif')
+                    self.image_pendu.set_from_file(self.dossierImages + self.niveau + '/pendu_gagne.gif')
                     self.gestion_bouton('off')
                     self.score += 1
                     self.nb_parties += 1
 
             else:
                 self.nb_echecs += 1
-                self.image_pendu.set_from_file(
-                    '/usr/share/pendu-peda-gtk/images/' + self.niveau + '/pendu_' + str(self.nb_echecs) + '.gif')
+                self.image_pendu.set_from_file(self.dossierImages  + self.niveau + '/pendu_' + str(self.nb_echecs) + '.gif')
                 if self.nb_echecs == max_essais:  # trop d'erreurs. Fini.
                     self.labelMotChoisi.set_markup(self.mot_choisi)
                     self.jeu_actif = False
@@ -242,6 +254,10 @@ class GtkPendu(Gtk.Window):
         :return:
         """
         self.niveau = niveau
+        if self.niveau == '001':
+            self.etiquetteNiveau = "Normal"
+        else:
+            self.etiquetteNiveau = 'Facile'
 
     def selectionner_fichier(self, widget, file, theme):
         """
@@ -255,9 +271,9 @@ class GtkPendu(Gtk.Window):
         """
         self.notebook.set_current_page(0)
         self.labelFile.set_markup(self.repData + '/' + file)
-        self.labelTheme.set_markup(self.file)
-        self.labelFile.set_markup(self.theme)
-        self.labelNiveau.set_markup('# Niveau : ' + self.niveau)
+        self.labelTheme.set_markup(self.theme)
+        self.labelFile.set_markup(self.file)
+        self.labelNiveau.set_markup('# Niveau : ' + self.etiquetteNiveau)
         self.lancement_jeu(widget)
 
     def cliquer_sur_bouton_a_propos(self, widget):
@@ -278,7 +294,7 @@ class GtkPendu(Gtk.Window):
         authors = ["Cyrille BIOT"]
         documenters = ["Cyrille BIOT"]
         self.dialog = Gtk.AboutDialog()
-        logo = GdkPixbuf.Pixbuf.new_from_file("./pendu-peda.png")
+        logo = GdkPixbuf.Pixbuf.new_from_file(self.rep + "pendu-peda.png")
         if logo != None:
             self.dialog.set_logo(logo)
         else:
@@ -322,7 +338,14 @@ class GtkPendu(Gtk.Window):
 
     # -----------------------------------------------------------
     # Les données de base
-    repData, file, theme = installer_config_locale()
+    rep, repData, fichierCSS, dossierImages, file, theme = installer_config_locale()
+    print(rep)
+    print(repData)
+    print(fichierCSS)
+    print(dossierImages)
+    print(file)
+    print(theme)
+
     matriceCM, matriceCE, matriceAUTRE = creer_matrice(repData)
     nb_echecs = 0
     score = 0
@@ -332,11 +355,11 @@ class GtkPendu(Gtk.Window):
     def __init__(self):
 
         Gtk.Window.__init__(self, title="Le pendu Pédagogique")
-        self.set_icon_from_file("./pendu-peda.png")
+        self.set_icon_from_file(self.rep + "pendu-peda.png")
 
         # Initialisation de la fenetre, creation d'un notebook
         self.set_border_width(3)
-        self.set_default_size(800, 600)
+        #self.set_default_size(800, 600)
         self.notebook = Gtk.Notebook()
         self.add(self.notebook)
         self.connect
@@ -347,7 +370,8 @@ class GtkPendu(Gtk.Window):
 
         # Creation d'une grille
         self.grid = Gtk.Grid()
-
+        self.grid.set_column_homogeneous(True)
+        #self.grid.set_row_homogeneous(True)
         # L'alphabet
         self.boutonLettres = [0] * 26
         for i in range(26):
@@ -356,17 +380,13 @@ class GtkPendu(Gtk.Window):
             self.boutonLettres[i].connect("clicked", self.clic_sur_lettres, chr(i + 65), self.boutonLettres[i])
             self.grid.attach(self.boutonLettres[i], i, 0, 1, 1)
 
-        # Les boutons
+        # Le bouton Recommencer
         boutonRecommencer = Gtk.Button(label="Recommencer")
-        boutonQuitter = Gtk.Button(label="Quitter")
         boutonRecommencer.connect("clicked", self.lancement_jeu)
-        boutonQuitter.connect("clicked", Gtk.main_quit)
-
-        self.grid.attach(boutonRecommencer, 0, 3, 13, 1)
-        self.grid.attach(boutonQuitter, 13, 3, 13, 1)
+        self.grid.attach(boutonRecommencer, 0, 3, 26, 1)
 
         # L'image
-        self.image_pendu = Gtk.Image.new_from_file('/usr/share/pendu-peda-gtk/images/' + self.niveau + '/pendu_0.gif')
+        self.image_pendu = Gtk.Image.new_from_file(self.dossierImages + self.niveau + '/pendu_0.gif')
         self.image_pendu.set_halign(Gtk.Align.END)
         self.image_pendu.set_name('img')
         self.grid.attach(self.image_pendu, 0, 1, 13, 1)
@@ -376,21 +396,22 @@ class GtkPendu(Gtk.Window):
         self.labelMotChoisi.set_name('mot_choisi')
         self.grid.attach(self.labelMotChoisi, 13, 1, 13, 1)
 
-        # Score
-        self.labelScore = Gtk.Label('Score : ' + str(self.score) + '/' + str(self.nb_parties))
-        self.labelScore.set_name('labelScore')
-        self.grid.attach(self.labelScore, 0, 2, 26, 1)
-
         # Le pied de page
         self.labelFile = Gtk.Label(self.repData + '/' + self.file)
         self.labelTheme = Gtk.Label('# Dictionnaire général')
-        self.labelNiveau = Gtk.Label('# Niveau : 001')
+        self.labelNiveau = Gtk.Label('# Niveau : Normal')
+        self.labelScore = Gtk.Label('Score : ' + str(self.score) + '/' + str(self.nb_parties))
+        self.labelScore.set_name('labelScore')
+
         self.labelFile.set_halign(Gtk.Align.START)
         self.labelTheme.set_halign(Gtk.Align.START)
-        self.labelTheme.set_halign(Gtk.Align.START)
+        self.labelNiveau.set_halign(Gtk.Align.END)
+        self.labelScore.set_halign(Gtk.Align.END)
+
         self.grid.attach(self.labelFile, 0, 4, 11, 1)
-        self.grid.attach(self.labelTheme, 11, 4, 11, 1)
-        self.grid.attach(self.labelNiveau, 22, 4, 4, 1)
+        self.grid.attach(self.labelTheme, 11, 4, 9, 1)
+        self.grid.attach(self.labelNiveau, 20, 4, 4, 1)
+        self.grid.attach(self.labelScore, 24, 4, 2, 1)
 
         # Affichage sur la grille
         self.notebook.append_page(self.grid, Gtk.Label('Jeu'))
@@ -398,8 +419,9 @@ class GtkPendu(Gtk.Window):
         # --------
         # ONGLET 2
         # Creation d'une grille et des boutons associés
-        self.grid2 = Gtk.Grid(column_spacing=50,
-                              row_spacing=1)
+        self.grid2 = Gtk.Grid()
+        self.grid2.set_hexpand(True)
+
         self.grid2.set_name('onglet23')
         textMatriceCM = [0] * int(len(self.matriceCM))
         boutonMatriceCM = [0] * int(len(self.matriceCM))
@@ -409,73 +431,117 @@ class GtkPendu(Gtk.Window):
         boutonMatriceAUTRE = [0] * int(len(self.matriceAUTRE))
 
         # Colonne CM
-        texteCM = Gtk.Label("NIVEAU CM")
-        self.grid2.attach(texteCM, 0, 0, 2, 1)
+        self.boxCM = Gtk.VBox()
+        self.add(self.boxCM)
+        self.boxCM.set_homogeneous(True)
+        self.boxCM.set_valign(Gtk.Align.START)
+
         for i in range(len(self.matriceCM)):
+            self.boxCMV = Gtk.Box()
+            self.add(self.boxCMV)
+            self.boxCMV.set_homogeneous(True)
+
             textMatriceCM[i] = Gtk.Label(self.matriceCM[i][2])
-            self.grid2.attach(textMatriceCM[i], 0, i + 1, 1, 1)
+            #self.grid2.attach(textMatriceCM[i], 0, i + 6, 1, 1)
+            self.boxCMV.pack_start(textMatriceCM[i], True, True, 1)
+
             textMatriceCM[i].set_halign(Gtk.Align.END)
             textMatriceCM[i].set_direction(Gtk.TextDirection.RTL)
             if i == 0:
                 boutonMatriceCM[i] = Gtk.RadioButton.new(None)
             else:
                 boutonMatriceCM[i] = Gtk.RadioButton.new_from_widget(boutonMatriceCM[0])
-            #boutonMatriceCM[i].connect("clicked", self.selectionner_fichier, self.matriceCM[i][3], self.matriceCM[i][2])
             boutonMatriceCM[i].connect("toggled", self.fct_bouton_radio, self.matriceCM[i][3], self.matriceCM[i][2])
-            boutonMatriceCM[i].set_name('okMatrice')
-            self.grid2.attach(boutonMatriceCM[i], 1, i + 1, 1, 1)
+            boutonMatriceCM[i].set_halign(Gtk.Align.CENTER)
+            self.boxCMV.pack_start(boutonMatriceCM[i], True, True, 1)
+            self.boxCMV.set_name('test')
+            self.boxCM.add(self.boxCMV)
 
         # Colonne CE
-        texteCE = Gtk.Label("NIVEAU CE")
-        self.grid2.attach(texteCE, 2, 0, 2, 1)
+        self.boxCE = Gtk.VBox()
+        self.add(self.boxCE)
+        self.boxCE.set_homogeneous(True)
+        self.boxCE.set_valign(Gtk.Align.START)
+
         for i in range(len(self.matriceCE)):
+            self.boxCEV = Gtk.Box()
+            self.add(self.boxCEV)
+            self.boxCEV.set_homogeneous(True)
             textMatriceCE[i] = Gtk.Label(self.matriceCE[i][2])
-            self.grid2.attach(textMatriceCE[i], 2, i + 1, 1, 1)
+            self.boxCEV.pack_start(textMatriceCE[i], True, True, 1)
             textMatriceCE[i].set_halign(Gtk.Align.END)
             textMatriceCE[i].set_direction(Gtk.TextDirection.RTL)
-            #boutonMatriceCE[i] = Gtk.Button.new_with_label("GO")
-            #boutonMatriceCE[i].connect("clicked", self.selectionner_fichier, self.matriceCE[i][3], self.matriceCE[i][2])
             boutonMatriceCE[i] = Gtk.RadioButton.new_from_widget(boutonMatriceCM[0])
             boutonMatriceCE[i].connect("toggled", self.fct_bouton_radio, self.matriceCE[i][3], self.matriceCE[i][2])
-            boutonMatriceCE[i].set_name('okMatrice')
-            self.grid2.attach(boutonMatriceCE[i], 3, i + 1, 1, 1)
+            boutonMatriceCE[i].set_halign(Gtk.Align.CENTER)
+            self.boxCEV.pack_start(boutonMatriceCE[i], True, True, 1)
+            self.boxCEV.set_name('test')
+            self.boxCE.add(self.boxCEV)
 
         # Colonne AUTRE
-        texteAUTRE = Gtk.Label("AUTRES")
-        self.grid2.attach(texteAUTRE, 4, 0, 2, 1)
+        self.boxAUTRE = Gtk.VBox()
+        self.add(self.boxAUTRE)
+        self.boxAUTRE.set_homogeneous(True)
+        self.boxAUTRE.set_valign(Gtk.Align.START)
         for i in range(len(self.matriceAUTRE)):
+            self.boxAUTREV = Gtk.Box()
+            self.add(self.boxAUTREV)
+            self.boxAUTREV.set_homogeneous(True)
             textMatriceAUTRE[i] = Gtk.Label(self.matriceAUTRE[i][2])
-            self.grid2.attach(textMatriceAUTRE[i], 4, i + 1, 1, 1)
+            self.boxAUTREV.pack_start(textMatriceAUTRE[i], True, True, 1)
             textMatriceAUTRE[i].set_halign(Gtk.Align.END)
             textMatriceAUTRE[i].set_direction(Gtk.TextDirection.RTL)
-            #boutonMatriceAUTRE[i] = Gtk.Button.new_with_label("GO")
-            #boutonMatriceAUTRE[i].connect("clicked", self.selectionner_fichier, self.matriceAUTRE[i][3], self.matriceAUTRE[i][2])
             boutonMatriceAUTRE[i] = Gtk.RadioButton.new_from_widget(boutonMatriceCM[0])
             boutonMatriceAUTRE[i].connect("toggled", self.fct_bouton_radio, self.matriceAUTRE[i][3], self.matriceAUTRE[i][2])
-            boutonMatriceAUTRE[i].set_name('okMatrice')
-            self.grid2.attach(boutonMatriceAUTRE[i], 5, i + 1, 1, 1)
+            boutonMatriceAUTRE[i].set_halign(Gtk.Align.CENTER)
+            self.boxAUTREV.pack_start(boutonMatriceAUTRE[i], True, True, 1)
+            self.boxAUTREV.set_name('test')
+            self.boxAUTRE.add(self.boxAUTREV)
 
-        # Colonne 4
-
+        # Ligne NIVEAU
         # Lanceur de sélection
-        texteLancerJeu = Gtk.Label('Lancer le thème sélectionné')
         boutonLancerJeu = Gtk.Button("C'EST PARTI ! ! ! ",)
-        texteLancerJeu.set_name('bold')
         boutonLancerJeu.connect("clicked", self.selectionner_fichier, self.file, self.theme)
-        self.grid2.attach(texteLancerJeu, 6, 5, 1, 2)
-        self.grid2.attach(boutonLancerJeu, 6, 7, 1, 2)
-
-        # Sélecteur de niveau
         texteSelectNiveau = Gtk.Label('Choisir votre niveau')
         texteSelectNiveau.set_name('bold')
-        self.grid2.attach(texteSelectNiveau, 6, 0, 1, 2)
-
         boutonRadioNiveau1 = Gtk.RadioButton.new_with_label(None, '[normal]')
         boutonRadioNiveau2 = Gtk.RadioButton.new_with_label_from_widget(boutonRadioNiveau1, '[facile]')
         boutonRadioNiveau1.connect("toggled", self.bouton_radio_niveau, '001')
         boutonRadioNiveau2.connect("toggled", self.bouton_radio_niveau, '002')
-        self.grid2.attach(boutonRadioNiveau2, 6, 2, 1, 1)
-        self.grid2.attach(boutonRadioNiveau1, 6, 3, 1, 2)
+        self.box = Gtk.HBox(spacing=1)
+        self.add(self.box)
+        self.boxAUTRE.set_homogeneous(True)
+        self.boxAUTRE.set_valign(Gtk.Align.CENTER)
+        self.box.pack_start(boutonRadioNiveau1, True, True, 1)
+        self.box.pack_start(boutonRadioNiveau2, True, True, 1)
+        self.box.pack_start(boutonLancerJeu, True, True, 1)
+
+        frameNiveau = Gtk.Frame()
+        frameNiveau.set_label_align(0.5, 0.5)
+        frameNiveau.set_label('Niveaux et sélection du thème')
+        frameNiveau.add(self.box)
+        self.grid2.attach(frameNiveau, 0, 0, 3, 1)
+
+        frameCM = Gtk.Frame()
+        frameCM.set_valign(Gtk.Align.START)
+        frameCM.set_label_align(0.5, 0.5)
+        frameCM.set_label('Niveaux CM')
+        frameCM.add(self.boxCM)
+        self.grid2.attach(frameCM, 0, 3, 1, 1)
+
+        frameCE = Gtk.Frame()
+        frameCE.set_valign(Gtk.Align.START)
+        frameCE.set_label_align(0.5, 0.5)
+        frameCE.set_label('Niveaux CE')
+        frameCE.add(self.boxCE)
+        self.grid2.attach(frameCE,1, 3, 1, 1)
+
+        frameAUTRE = Gtk.Frame()
+        frameAUTRE.set_valign(Gtk.Align.START)
+        frameAUTRE.set_label_align(0.5, 0.5)
+        frameAUTRE.set_label('Autres')
+        frameAUTRE.add(self.boxAUTRE)
+        self.grid2.attach(frameAUTRE,2, 3, 1, 1)
 
         # Affichage sur la grille avec un scroll
         s_win = Gtk.ScrolledWindow()
@@ -504,9 +570,9 @@ def main():
     La boucle de lancement
     :return:
     """
-    gtk_style()
     win = GtkPendu()
-    win.move(20, 20)
+    win.gtk_style()
+    win.move(10, 10)
     win.connect("destroy", Gtk.main_quit)
     win.lancement_jeu(GtkPendu.file)
     win.show_all()
