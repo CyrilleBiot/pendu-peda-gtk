@@ -2,6 +2,11 @@
   background-color: #DCDCDC;
   color: black;
 }
+#ongletThemeImg {
+  background-color: #DCDCDC;
+  color: black;
+  padding: 10px 30px 10px 30px
+}
 #bold {
   font-weight: bold;
 }

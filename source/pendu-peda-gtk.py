@@ -13,8 +13,8 @@ __author__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __copyright__ = "Copyleft"
 __credits__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __license__ = "GPL"
-__version__ = "0.3"
-__date__ = "2020/03/12"
+__version__ = "0.5"
+__date__ = "2020/04/07"
 __maintainer__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __email__ = "cyrille@cbiot.fr"
 __status__ = "Devel"
@@ -142,7 +142,7 @@ class GtkPendu(Gtk.Window):
         # Quelques vriables
         self.jeu_actif = True  # Si nouvelle partie (booleen)
         self.nb_echecs = 0  # Compte le nombre d'échecs (integer)
-        self.image_pendu.set_from_file(self.dossierImages + self.niveau + '/pendu_0.gif')
+        self.image_pendu.set_from_file(self.dossierImages + self.setImages + '/' + self.niveau + '/pendu_0.gif')
 
         # Chargement du fichier et choix aléatoire d'un mot
         fichier = open(str(self.repData) + '/' + str(self.file), "r")
@@ -209,14 +209,14 @@ class GtkPendu(Gtk.Window):
 
                 if self.mot_tiret == self.mot_choisi:
                     self.jeu_actif = False
-                    self.image_pendu.set_from_file(self.dossierImages + self.niveau + '/pendu_gagne.gif')
+                    self.image_pendu.set_from_file(self.dossierImages + self.setImages + '/' + self.niveau + '/pendu_gagne.gif')
                     self.gestion_bouton('off')
                     self.score += 1
                     self.nb_parties += 1
 
             else:
                 self.nb_echecs += 1
-                self.image_pendu.set_from_file(self.dossierImages  + self.niveau + '/pendu_' + str(self.nb_echecs) + '.gif')
+                self.image_pendu.set_from_file(self.dossierImages  + self.setImages + '/' + self.niveau + '/pendu_' + str(self.nb_echecs) + '.gif')
                 if self.nb_echecs == max_essais:  # trop d'erreurs. Fini.
                     self.labelMotChoisi.set_markup(self.mot_choisi)
                     self.jeu_actif = False
@@ -259,6 +259,28 @@ class GtkPendu(Gtk.Window):
         else:
             self.etiquetteNiveau = 'Facile'
 
+    def fct_bouton_radio_theme_img(self, widget, setImages):
+        """
+        Function qui gere le button_radio (toggle)
+        :param widget:
+        :param file: Nom du Fichier
+        :param theme: Theme ud Fichier
+        :return:
+        """
+        self.setImages = setImages
+
+    def bouton_radio_niveau_theme_img(self, widget, setImages):
+        """
+        Function qui gere le button_radio (toggle) du
+        sélectionneur de niveau
+        :param widget:
+        :param niveau: niveau choisi
+        :return:
+        """
+        self.setImages = setImages
+        print(self.setImages)
+
+
     def selectionner_fichier(self, widget, file, theme):
         """
         Fonction gérant la sélection d'un fichier de configuration spécifique
@@ -275,6 +297,19 @@ class GtkPendu(Gtk.Window):
         self.labelFile.set_markup(self.file)
         self.labelNiveau.set_markup('# Niveau : ' + self.etiquetteNiveau)
         self.lancement_jeu(widget)
+
+    def changer_theme(self, widget):
+        """
+        Fonction gérant la sélection d'un fichier de configuration spécifique
+        disponible dans l'onglet 2
+        Passe en paramètre le fichier (son nom) et le thème de ce fichier
+        :param widget:
+        :param setImages:
+        :return:
+        """
+        self.notebook.set_current_page(0)
+        self.lancement_jeu(widget)
+
 
     def cliquer_sur_bouton_a_propos(self, widget):
         """
@@ -345,6 +380,7 @@ class GtkPendu(Gtk.Window):
     score = 0
     nb_parties = 0
     niveau = "001"
+    setImages = 'set0'
 
     def __init__(self):
 
@@ -365,7 +401,7 @@ class GtkPendu(Gtk.Window):
         # Creation d'une grille
         self.grid = Gtk.Grid()
         self.grid.set_column_homogeneous(True)
-        #self.grid.set_row_homogeneous(True)
+
         # L'alphabet
         self.boutonLettres = [0] * 26
         for i in range(26):
@@ -380,7 +416,7 @@ class GtkPendu(Gtk.Window):
         self.grid.attach(boutonRecommencer, 0, 3, 26, 1)
 
         # L'image
-        self.image_pendu = Gtk.Image.new_from_file(self.dossierImages + self.niveau + '/pendu_0.gif')
+        self.image_pendu = Gtk.Image.new_from_file(self.dossierImages + self.setImages + '/'  + self.niveau + '/pendu_0.gif')
         self.image_pendu.set_halign(Gtk.Align.END)
         self.image_pendu.set_name('img')
         self.grid.attach(self.image_pendu, 0, 1, 13, 1)
@@ -499,8 +535,8 @@ class GtkPendu(Gtk.Window):
         boutonRadioNiveau2.connect("toggled", self.bouton_radio_niveau, '002')
         self.box = Gtk.HBox(spacing=1)
         self.add(self.box)
-        self.boxAUTRE.set_homogeneous(True)
-        self.boxAUTRE.set_valign(Gtk.Align.CENTER)
+        self.box.set_homogeneous(True)
+        self.box.set_valign(Gtk.Align.CENTER)
         self.box.pack_start(boutonRadioNiveau1, True, False, 1)
         self.box.pack_start(boutonRadioNiveau2, True, False, 1)
         self.box.pack_start(boutonLancerJeu, True, False, 1)
@@ -541,6 +577,143 @@ class GtkPendu(Gtk.Window):
 
         # --------
         # ONGLET 3
+        # Creation d'une grille et des boutons associés
+        self.grid3 = Gtk.Grid()
+        self.grid3.set_hexpand(True)
+        self.grid3.set_column_homogeneous(True)
+        self.grid3.set_name('ongletThemeImg')
+
+
+        # Ligne THEME IMAGE
+
+        # Les buttons radios
+        boutonRadioSet1 = Gtk.RadioButton.new_with_label(None, 'Set 1')
+        boutonRadioSet2 = Gtk.RadioButton.new_with_label_from_widget(boutonRadioSet1, 'Set 2')
+        boutonRadioSet3 = Gtk.RadioButton.new_with_label_from_widget(boutonRadioSet1, 'Set 3')
+        boutonRadioSet4 = Gtk.RadioButton.new_with_label_from_widget(boutonRadioSet1, 'Set 4')
+        boutonRadioSet5 = Gtk.RadioButton.new_with_label_from_widget(boutonRadioSet1, 'Set 5')
+
+
+        boutonRadioSet1.connect("toggled", self.bouton_radio_niveau_theme_img, 'set1')
+        boutonRadioSet1.set_halign(Gtk.Align.CENTER)
+        boutonRadioSet1.set_name('ongletThemeImg')
+        boutonRadioSet2.connect("toggled", self.bouton_radio_niveau_theme_img, 'set1')
+        boutonRadioSet2.set_halign(Gtk.Align.CENTER)
+        boutonRadioSet2.set_name('ongletThemeImg')
+        boutonRadioSet3.connect("toggled", self.bouton_radio_niveau_theme_img, 'set2')
+        boutonRadioSet3.set_halign(Gtk.Align.CENTER)
+        boutonRadioSet3.set_name('ongletThemeImg')
+        boutonRadioSet4.connect("toggled", self.bouton_radio_niveau_theme_img, 'set3')
+        boutonRadioSet4.set_halign(Gtk.Align.CENTER)
+        boutonRadioSet4.set_name('ongletThemeImg')
+        boutonRadioSet5.connect("toggled", self.bouton_radio_niveau_theme_img, 'set4')
+        boutonRadioSet5.set_halign(Gtk.Align.CENTER)
+        boutonRadioSet5.set_name('ongletThemeImg')
+
+        # Les miniatures des images
+        img1 = Gtk.Image.new_from_file(self.dossierImages + '/preview/01.png')
+        img1.set_name('ongletThemeImg')
+        img2 = Gtk.Image.new_from_file(self.dossierImages + '/preview/02.png')
+        img2.set_name('ongletThemeImg')
+        img3 = Gtk.Image.new_from_file(self.dossierImages + '/preview/03.png')
+        img3.set_name('ongletThemeImg')
+        img4 = Gtk.Image.new_from_file(self.dossierImages + '/preview/04.png')
+        img4.set_name('ongletThemeImg')
+        img5 = Gtk.Image.new_from_file(self.dossierImages + '/preview/05.png')
+        img5.set_name('ongletThemeImg')
+
+
+        # SET 1
+        self.boxSet1 = Gtk.VBox(spacing=1)
+        self.add(self.boxSet1)
+        self.boxSet1.set_homogeneous(True)
+        self.boxSet1.set_valign(Gtk.Align.CENTER)
+        self.boxSet1.pack_start(boutonRadioSet1, True, False, 1)
+        self.boxSet1.pack_start(img1, True, False, 1)
+
+        frameSet1 = Gtk.Frame()
+        frameSet1.set_valign(Gtk.Align.START)
+        frameSet1.set_label_align(0.5, 0.5)
+        frameSet1.set_label('THEME 1')
+        frameSet1.add(self.boxSet1)
+
+        # SET 2
+        self.boxSet2 = Gtk.VBox(spacing=1)
+        self.add(self.boxSet2)
+        self.boxSet2.set_homogeneous(True)
+        self.boxSet2.set_valign(Gtk.Align.CENTER)
+        self.boxSet2.pack_start(boutonRadioSet2, True, False, 1)
+        self.boxSet2.pack_start(img2, True, False, 1)
+
+        frameSet2 = Gtk.Frame()
+        frameSet2.set_valign(Gtk.Align.START)
+        frameSet2.set_label_align(0.5, 0.5)
+        frameSet2.set_label('THEME 2')
+        frameSet2.add(self.boxSet2)
+
+        # SET 3
+        self.boxSet3 = Gtk.VBox(spacing=1)
+        self.add(self.boxSet3)
+        self.boxSet3.set_homogeneous(True)
+        self.boxSet3.set_valign(Gtk.Align.CENTER)
+        self.boxSet3.pack_start(boutonRadioSet3, True, False, 1)
+        self.boxSet3.pack_start(img3, True, False, 1)
+
+        frameSet3 = Gtk.Frame()
+        frameSet3.set_valign(Gtk.Align.START)
+        frameSet3.set_label_align(0.5, 0.5)
+        frameSet3.set_label('THEME 3')
+        frameSet3.add(self.boxSet3)
+
+        # SET 4
+        self.boxSet4 = Gtk.VBox(spacing=1)
+        self.add(self.boxSet4)
+        self.boxSet4.set_homogeneous(True)
+        self.boxSet4.set_valign(Gtk.Align.CENTER)
+        self.boxSet4.pack_start(boutonRadioSet4, True, False, 1)
+        self.boxSet4.pack_start(img4, True, False, 1)
+
+        frameSet4 = Gtk.Frame()
+        frameSet4.set_valign(Gtk.Align.START)
+        frameSet4.set_label_align(0.5, 0.5)
+        frameSet4.set_label('THEME 4')
+        frameSet4.add(self.boxSet4)
+
+        # SET 5
+        self.boxSet5 = Gtk.VBox(spacing=1)
+        self.add(self.boxSet5)
+        self.boxSet5.set_homogeneous(True)
+        self.boxSet5.set_valign(Gtk.Align.CENTER)
+        self.boxSet5.pack_start(boutonRadioSet5, True, False, 1)
+        self.boxSet5.pack_start(img5, True, False, 1)
+
+        frameSet5 = Gtk.Frame()
+        frameSet5.set_valign(Gtk.Align.START)
+        frameSet5.set_label_align(0.5, 0.5)
+        frameSet5.set_label('THEME 5')
+        frameSet5.add(self.boxSet5)
+
+        # On fixe le tout
+        self.grid3.attach(frameSet1, 0, 1, 1, 1)
+        self.grid3.attach(frameSet2, 1, 1, 1, 1)
+        self.grid3.attach(frameSet3, 2, 1, 1, 1)
+        self.grid3.attach(frameSet4, 3, 1, 1, 1)
+        self.grid3.attach(frameSet5, 4, 1, 1, 1)
+
+        # Ligne 3
+        boutonLancerJeu = Gtk.Button(label='C\'EST PARTI ! ! ! ')
+        #boutonLancerJeu.set_halign(Gtk.Align.START)
+        boutonLancerJeu.connect("clicked", self.changer_theme)
+        boutonLancerJeu.set_halign(Gtk.Align.CENTER)
+
+        self.grid3.attach(boutonLancerJeu,0,3,5,1)
+
+        # On fixe le tout
+        self.notebook.append_page(self.grid3, Gtk.Label('Thèmes'))
+
+
+        # --------
+        # ONGLET 4
         # A propos
         about = Gtk.HBox()
         logo = Gtk.Image.new_from_file("./pendu-peda.png")

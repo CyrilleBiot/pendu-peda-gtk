@@ -1,13 +1,11 @@
 Source: pendu-peda-gtk
 Section: education
-Version: 0.0.2
-Priority: optional
+Priority: extra
 Maintainer: Cyrille Biot <cyrille@cbiot.fr>
 Build-Depends: debhelper (>= 9)
 Homepage: https://github.com/CyrilleBiot/pendu-peda-gtk
 
 Package: pendu-peda-gtk
-Version: 0.0.2
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python3, python3-gi
 Homepage: https://github.com/CyrilleBiot/pendu-peda-gtk
