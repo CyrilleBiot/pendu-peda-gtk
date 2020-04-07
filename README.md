@@ -32,6 +32,7 @@ Toutes les informations détailles sont disponibles ici :
 ![alt text](https://cbiot.fr/dokuwiki/lib/exe/fetch.php?w=800&tok=ba8746&media=python:2020-03-10_11-45.png)
 ![alt text](https://cbiot.fr/dokuwiki/lib/exe/fetch.php?w=800&tok=08827a&media=python:2020-03-10_11-49.png)
 ![alt text](https://cbiot.fr/dokuwiki/lib/exe/fetch.php?w=800&tok=6f60b8&media=python:2020-03-12_16-10.png)
+![alt text](https://cbiot.fr/dokuwiki/_media/python:2020-04-07_13-33.png)
 
 ## Changelog
 
