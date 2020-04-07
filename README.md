@@ -36,6 +36,12 @@ Toutes les informations détailles sont disponibles ici :
 
 ## Changelog
 
+pendu-peda-gtk (0.4) unstable; urgency=medium
+ 
+  * Insert Themes
+
+ -- ragnarok <ragnarok@fenrir.home>  Tue, 07 Apr 2020 13:24:17 +0200
+
 pendu-peda-gtk (0.3+nmu1) UNRELEASED; urgency=medium
 
   * Clean Gtk.box code
