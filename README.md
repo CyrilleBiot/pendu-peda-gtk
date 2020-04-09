@@ -36,6 +36,12 @@ Toutes les informations détailles sont disponibles ici :
 
 ## Changelog
 
+pendu-peda-gtk (0.5) unstable; urgency=medium
+
+  * Fix launcher bug : load the good file when program starts
+
+ -- ragnarok <ragnarok@fenrir.home>  Thu, 09 Apr 2020 14:34:26 +0200
+
 pendu-peda-gtk (0.4) unstable; urgency=medium
  
   * Insert Themes

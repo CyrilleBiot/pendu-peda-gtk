@@ -14,7 +14,7 @@ __copyright__ = "Copyleft"
 __credits__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __license__ = "GPL"
 __version__ = "0.5"
-__date__ = "2020/04/07"
+__date__ = "2020/04/09"
 __maintainer__ = "Cyrille BIOT <cyrille@cbiot.fr>"
 __email__ = "cyrille@cbiot.fr"
 __status__ = "Devel"
@@ -63,8 +63,11 @@ class GtkPendu(Gtk.Window):
             fichierCSS = "/usr/share/pendu-peda-gtk/pendu-peda-gtk.css"
             dossierImages = "/usr/share/pendu-peda-gtk/images/"
 
-        file = 'autre-liste-francais.txt'
-        theme = "# Dictionnaire général"
+        #file = 'autre-liste-francais.txt'
+        #theme = "# Dictionnaire général"
+
+        file = 'cm_geo_pays-UE.txt'
+        theme = "# Les pays de l'Union européenne"
 
         return rep, repData, fichierCSS, dossierImages, file, theme
 
@@ -294,7 +297,7 @@ class GtkPendu(Gtk.Window):
         self.notebook.set_current_page(0)
         self.labelFile.set_markup(self.repData + '/' + file)
         self.labelTheme.set_markup(self.theme)
-        self.labelFile.set_markup(self.file)
+        self.labelFile.set_markup('# ' + self.file)
         self.labelNiveau.set_markup('# Niveau : ' + self.etiquetteNiveau)
         self.lancement_jeu(widget)
 
@@ -427,8 +430,8 @@ class GtkPendu(Gtk.Window):
         self.grid.attach(self.labelMotChoisi, 13, 1, 13, 1)
 
         # Le pied de page
-        self.labelFile = Gtk.Label(self.repData + '/' + self.file)
-        self.labelTheme = Gtk.Label('# Dictionnaire général')
+        self.labelFile = Gtk.Label('# ' + self.file)
+        self.labelTheme = Gtk.Label('# Les pays de l\'UE')
         self.labelNiveau = Gtk.Label('# Niveau : Normal')
         self.labelScore = Gtk.Label('Score : ' + str(self.score) + '/' + str(self.nb_parties))
         self.labelScore.set_name('labelScore')
