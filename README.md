@@ -36,6 +36,12 @@ Toutes les informations détailles sont disponibles ici :
 
 ## Changelog
 
+pendu-peda-gtk (0.6) unstable; urgency=medium
+
+  * Fix labelNiveau bug.
+
+ -- ragnarok <ragnarok@fenrir.home>  Fri, 10 Apr 2020 13:05:11 +0200
+
 pendu-peda-gtk (0.5) unstable; urgency=medium
 
   * Fix launcher bug : load the good file when program starts
