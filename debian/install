@@ -1,0 +1,8 @@
+source/pendu-peda-gtk.py usr/share/pendu-peda-gtk/
+source/pendu-peda-gtk.css usr/share/pendu-peda-gtk/
+source/pendu-peda.png usr/share/pendu-peda-gtk/
+source/images usr/share/pendu-peda-gtk/
+source/data-files/*.txt usr/share/pendu-peda-gtk/data-files/
+source/pendu-peda-gtk.6.gz usr/share/man/man6/
+source/pendu-peda-gtk usr/bin/
+source/pendu-peda-gtk.desktop /usr/share/applications/

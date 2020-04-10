@@ -1,0 +1,52 @@
+pendu-peda-gtk (0.6) unstable; urgency=medium
+
+  * Fix labelNiveau bug.
+
+ -- ragnarok <ragnarok@fenrir.home>  Fri, 10 Apr 2020 13:05:11 +0200
+
+pendu-peda-gtk (0.5) unstable; urgency=medium
+
+  * Fix launcher bug : load the good file when program starts
+
+ -- ragnarok <ragnarok@fenrir.home>  Thu, 09 Apr 2020 14:34:26 +0200
+
+pendu-peda-gtk (0.4) unstable; urgency=medium
+ 
+  * Insert Themes
+
+ -- ragnarok <ragnarok@fenrir.home>  Tue, 07 Apr 2020 13:24:17 +0200
+
+pendu-peda-gtk (0.3) unstable; urgency=medium
+
+  * DEBUG mode since the git source dir. 
+  * Fix size windows tab2 (create Frames)
+  * Changed agressive red color
+  * Fix bug Level print
+  * Remove QUIT button
+
+
+ -- ragnarok <ragnarok@fenrir.home>  Thu, 12 Mar 2020 15:55:59 +0100
+
+pendu-peda-gtk (0.2) unstable; urgency=medium
+
+  * Fix path install, size of screen, level, about dialog access
+
+ -- ragnarok <ragnarok@fenrir.home>  Wed, 11 Mar 2020 15:30:43 +0100
+
+pendu-peda-gtk (0.0.2+nmu2) unstable; urgency=medium
+
+  * Fix bug Score 
+
+ -- ragnarok <ragnarok@fenrir.home>  Tue, 10 Mar 2020 11:28:23 +0100
+
+pendu-peda-gtk (0.0.2+nmu1) unstable; urgency=medium
+
+  * Fix bugs. Add icon. Rebuild CSS. 
+
+ -- ragnarok <ragnarok@fenrir.home>  Tue, 10 Mar 2020 11:06:31 +0100
+
+pendu-peda-gtk (0.0.2) unstable; urgency=medium
+
+  * Initial release. (Closes: #XXXXXX)
+
+ -- ragnarok <ragnarok@fenrir.home>  Mon, 09 Mar 2020 10:40:20 +0100

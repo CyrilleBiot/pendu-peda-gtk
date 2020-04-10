@@ -1,0 +1,40 @@
+# CM
+# Géographie
+# Les espaces urbains
+ville
+urbain
+urbunisme
+urbaniser
+équipement
+cultiver
+loger
+habiter
+résider
+soigner
+loisir
+quartier
+banlieue
+déplacement
+centre-ville
+aménager
+graffiti
+commerce
+culture
+santé
+loisirs
+activité
+périphérie
+embouteillage
+cyclable
+cycliste
+itinéraire
+transport
+transporter
+pédestre
+marche
+bus
+métro
+voiture
+autobis
+pédibus
+vélo
